@@ -15,6 +15,11 @@ import java.util.Map;
  */
 public final class FieldOperatorUtils {
 
+    // disable constructor
+    private FieldOperatorUtils() {
+        Tools.assert0("can't instantiate !");
+    }
+
     /** COMMON_SQL_OPERATOR_MAP */
     public static final Map<FieldOperator, String> COMMON_SQL_OPERATOR_MAP = new HashMap<>();
 
@@ -29,11 +34,6 @@ public final class FieldOperatorUtils {
         COMMON_SQL_OPERATOR_MAP.put(FieldOperator.NOT_LIKE, "not like");
         COMMON_SQL_OPERATOR_MAP.put(FieldOperator.IN, "in");
         COMMON_SQL_OPERATOR_MAP.put(FieldOperator.NOT_IN, "not in");
-    }
-
-    // disable constructor
-    private FieldOperatorUtils() {
-        Tools.assert0("can't instantiate !");
     }
 
     /**
