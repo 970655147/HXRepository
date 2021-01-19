@@ -46,6 +46,10 @@ public class BaseServiceTest {
      * @date 2021-01-19 18:21
      */
     public JSONObject toDebugJSON(Object object) {
+        if (object == null) {
+            return new JSONObject();
+        }
+
         Class clazz = object.getClass();
         ClassInfo classInfo = ClassInfoUtils.getClassInfo(clazz);
         List<FieldInfo> fieldInfoList = classInfo.getFields();
