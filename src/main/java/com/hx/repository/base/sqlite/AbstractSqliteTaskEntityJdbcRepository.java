@@ -23,7 +23,8 @@ import java.util.function.Function;
  * @version 1.0
  * @date 2021-01-15 17:16
  */
-public abstract class AbstractSqliteTaskEntityJdbcRepository<T> extends AbstractSqliteEntityJdbcRepository<T> implements TaskEntityJdbcRepository<T> {
+public abstract class AbstractSqliteTaskEntityJdbcRepository<T> extends AbstractSqliteEntityJdbcRepository<T>
+        implements TaskEntityJdbcRepository<T> {
 
     @Override
     public int add(String taskId, T entity) {

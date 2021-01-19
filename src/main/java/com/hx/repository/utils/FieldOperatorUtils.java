@@ -27,9 +27,9 @@ public final class FieldOperatorUtils {
         COMMON_SQL_OPERATOR_MAP.put(FieldOperator.EQ, "=");
         COMMON_SQL_OPERATOR_MAP.put(FieldOperator.NE, "<>");
         COMMON_SQL_OPERATOR_MAP.put(FieldOperator.GT, ">");
-        COMMON_SQL_OPERATOR_MAP.put(FieldOperator.GE, ">=");
+        COMMON_SQL_OPERATOR_MAP.put(FieldOperator.GTE, ">=");
         COMMON_SQL_OPERATOR_MAP.put(FieldOperator.LT, "<");
-        COMMON_SQL_OPERATOR_MAP.put(FieldOperator.LE, "<=");
+        COMMON_SQL_OPERATOR_MAP.put(FieldOperator.LTE, "<=");
         COMMON_SQL_OPERATOR_MAP.put(FieldOperator.LIKE, "like");
         COMMON_SQL_OPERATOR_MAP.put(FieldOperator.NOT_LIKE, "not like");
         COMMON_SQL_OPERATOR_MAP.put(FieldOperator.IN, "in");

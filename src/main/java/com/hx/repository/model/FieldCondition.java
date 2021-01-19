@@ -18,7 +18,6 @@ public class FieldCondition {
     private String columnName;
     private FieldOperator operator;
     private Object value;
-
     private FieldInfo fieldInfo;
 
 }

@@ -14,10 +14,7 @@ import com.hx.repository.utils.QueryMapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * AbstractSqliteEntityJdbcRepository
@@ -72,7 +69,6 @@ public abstract class AbstractSqliteEntityJdbcRepository<T> extends AbstractEnti
      */
     protected String generateInsertSql(List<T> entityList) {
         String sqlTemplate = " INSERT INTO %s %s; ";
-
         String fieldAndValuesSql = generateInsertSqlFragment(entityList);
         return String.format(sqlTemplate, tableName(), fieldAndValuesSql);
     }
@@ -87,7 +83,6 @@ public abstract class AbstractSqliteEntityJdbcRepository<T> extends AbstractEnti
      */
     protected String generateFindByIdSql(String id) {
         String sqlTemplate = " SELECT * FROM %s %s; ";
-
         String whereCond = String.format(" WHERE ID = '%s' LIMIT 1 ", id);
         return String.format(sqlTemplate, tableName(), whereCond);
     }
@@ -121,7 +116,6 @@ public abstract class AbstractSqliteEntityJdbcRepository<T> extends AbstractEnti
      */
     protected String generateAllBySql0(JSONObject queryMap, boolean andOr, String queryFieldList) {
         String sqlTemplate = " SELECT %s FROM %s %s; ";
-
         String whereCondFragment = generateWhereCond(queryMap, andOr);
         String whereCond = SqlConstants.EMPTY_STR;
         if (StringUtils.isNotBlank(whereCondFragment)) {
@@ -143,7 +137,6 @@ public abstract class AbstractSqliteEntityJdbcRepository<T> extends AbstractEnti
      */
     protected String generateListBySql(JSONObject queryMap, boolean andOr, int pageNo, int pageSize) {
         String sqlTemplate = " SELECT * FROM %s %s LIMIT %s OFFSET %s ; ";
-
         String whereCondFragment = generateWhereCond(queryMap, andOr);
         String whereCond = SqlConstants.EMPTY_STR;
         if (StringUtils.isNotBlank(whereCondFragment)) {
@@ -163,8 +156,7 @@ public abstract class AbstractSqliteEntityJdbcRepository<T> extends AbstractEnti
      * @date 2021-01-17 18:59
      */
     protected String generateUpdateSql(T entity, boolean notNull) {
-        String sqlTemplate = " UPDATE SET %s %s; ";
-
+        String sqlTemplate = " UPDATE %s SET %s %s; ";
         String updateFragment = generateUpdateSqlFragment(entity, notNull);
         String id = getId(entity);
         String whereCond = String.format(" WHERE ID = '%s' ", id);
@@ -181,8 +173,7 @@ public abstract class AbstractSqliteEntityJdbcRepository<T> extends AbstractEnti
      * @date 2021-01-19 16:50
      */
     protected String generateUpdateBySql(T entity, JSONObject queryMap, boolean andOr, boolean notNull) {
-        String sqlTemplate = " UPDATE %s %s %s; ";
-
+        String sqlTemplate = " UPDATE %s SET %s %s; ";
         String updateFragment = generateUpdateSqlFragment(entity, notNull);
         String whereCondFragment = generateWhereCond(queryMap, andOr);
         String whereCond = SqlConstants.EMPTY_STR;
@@ -203,7 +194,6 @@ public abstract class AbstractSqliteEntityJdbcRepository<T> extends AbstractEnti
      */
     protected String generateDeleteByIdSql(String id) {
         String sqlTemplate = " DELETE FROM %s %s; ";
-
         String whereCond = String.format(" WHERE ID = '%s' ", id);
         return String.format(sqlTemplate, tableName(), whereCond);
     }
@@ -219,7 +209,6 @@ public abstract class AbstractSqliteEntityJdbcRepository<T> extends AbstractEnti
      */
     protected String generateDeleteBySql(JSONObject queryMap, boolean andOr) {
         String sqlTemplate = " DELETE FROM %s %s; ";
-
         String whereCond = SqlConstants.EMPTY_STR;
         String whereCondFragment = generateWhereCond(queryMap, andOr);
         if (StringUtils.isNotBlank(whereCondFragment)) {
@@ -314,8 +303,8 @@ public abstract class AbstractSqliteEntityJdbcRepository<T> extends AbstractEnti
             }
 
             FieldOperator queryOperator = QueryMapUtils.parseQueryOperator(key);
-            Object value = queryMap.get(queryField);
-            result.add(new FieldCondition(queryField, queryOperator, value, fieldInfo));
+            Object value = queryMap.get(key);
+            result.add(new FieldCondition(fieldInfo.getColumnName(), queryOperator, value, fieldInfo));
         }
         return result;
     }
@@ -358,6 +347,17 @@ public abstract class AbstractSqliteEntityJdbcRepository<T> extends AbstractEnti
      * @date 2021-01-19 15:21
      */
     protected String wrapFieldValueSql(Object fieldValueObj, FieldInfo fieldInfo) {
+        if (fieldValueObj instanceof Collection) {
+            Iterator<String> ite = ((Collection) fieldValueObj).iterator();
+            List<String> itemList = new ArrayList<>();
+            while (ite.hasNext()) {
+                String item = wrapFieldValueSql(ite.next(), fieldInfo);
+                itemList.add(item);
+            }
+            String itemListSql = StringUtils.join(itemList, ", ");
+            return String.format("(%s)", itemListSql);
+        }
+
         return (fieldValueObj == null) ? "null"
                 : String.format("'%s'", String.valueOf(fieldValueObj));
     }

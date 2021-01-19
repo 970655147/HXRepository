@@ -17,11 +17,11 @@ public enum FieldOperator implements Code2Msg<String, String> {
     /** 大于 */
     GT("GT", "Gt", "大于"),
     /** 大于等于 */
-    GE("GE", "Ge", "大于等于"),
+    GTE("GTE", "Gte", "大于等于"),
     /** 小于 */
     LT("LT", "Lt", "小于"),
     /** 小于等于 */
-    LE("LE", "Le", "小于等于"),
+    LTE("LTE", "Lte", "小于等于"),
     /** like */
     LIKE("LIKE", "Like", "like"),
     /** not like */
@@ -30,10 +30,6 @@ public enum FieldOperator implements Code2Msg<String, String> {
     IN("IN", "In", "in"),
     /** not in */
     NOT_IN("NOT_IN", "NotIn", "not in");
-//    /** between */
-//    BETWEEN("BETWEEN", "between");
-//    /** not between */
-//    NOT_BETWEEN("NOT_BETWEEN", "not between");
 
     private final String code;
 
