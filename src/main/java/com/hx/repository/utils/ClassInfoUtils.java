@@ -23,6 +23,11 @@ import java.util.Map;
  */
 public final class ClassInfoUtils {
 
+    // disable constructor
+    private ClassInfoUtils() {
+        Tools.assert0("can't instantiate !");
+    }
+
     /** 全局的 classInfoManager */
     private static final Map<Class, ClassInfo> GLOBAL = new HashMap<>();
 
