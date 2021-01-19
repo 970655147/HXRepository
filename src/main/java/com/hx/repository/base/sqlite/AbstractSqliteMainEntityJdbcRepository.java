@@ -3,14 +3,14 @@ package com.hx.repository.base.sqlite;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.hx.repository.base.interf.MainEntityJdbcRepository;
-import com.hx.repository.consts.SqlConstants;
 import com.hx.repository.model.ClassInfo;
 import com.hx.repository.model.Page;
 import com.hx.repository.utils.QueryMapUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * MainEntityJdbcRepository
@@ -24,7 +24,7 @@ public abstract class AbstractSqliteMainEntityJdbcRepository<T> extends Abstract
 
     @Override
     public int add(T entity) {
-        String sql = generateInsertSql(Arrays.asList(entity));
+        String sql = generateInsertSql(Collections.singletonList(entity));
         return getJdbcTemplate().update(sql);
     }
 
@@ -49,16 +49,7 @@ public abstract class AbstractSqliteMainEntityJdbcRepository<T> extends Abstract
     @Override
     public List<T> allBy(JSONObject queryMap, boolean andOr) {
         String sql = generateAllBySql(queryMap, andOr);
-        List<Map<String, Object>> list = getJdbcTemplate().queryForList(sql);
-        if (CollectionUtils.isEmpty(list)) {
-            return Collections.emptyList();
-        }
-
-        List<T> result = new ArrayList<>();
-        for (Map<String, Object> json : list) {
-            result.add(fromJson((JSONObject) JSON.toJSON(json)));
-        }
-        return result;
+        return allBy0(sql);
     }
 
     @Override
@@ -68,16 +59,11 @@ public abstract class AbstractSqliteMainEntityJdbcRepository<T> extends Abstract
         int totalRecord = countBy(queryMap, andOr);
 
         String sql = generateListBySql(queryMap, andOr, pageNo, pageSize);
-        List<Map<String, Object>> list = getJdbcTemplate().queryForList(sql);
+        List<T> list = allBy0(sql);
         if (CollectionUtils.isEmpty(list)) {
             return Page.empty(pageNo, pageSize);
         }
-
-        List<T> result = new ArrayList<>();
-        for (Map<String, Object> json : list) {
-            result.add(fromJson((JSONObject) JSON.toJSON(json)));
-        }
-        return Page.wrap(pageNo, pageSize, totalRecord, result);
+        return Page.wrap(pageNo, pageSize, totalRecord, list);
     }
 
     @Override
@@ -144,181 +130,10 @@ public abstract class AbstractSqliteMainEntityJdbcRepository<T> extends Abstract
         return getJdbcTemplate().update(sql);
     }
 
-    // -------------------------------------- 间接工具方法 --------------------------------------
-
-    /**
-     * 获取插入给定的实体的 插入语句
-     *
-     * @param entityList entityList
-     * @return java.lang.String
-     * @author Jerry.X.He
-     * @date 2021-01-17 11:11
-     */
-    protected String generateInsertSql(List<T> entityList) {
-        String sqlTemplate = " INSERT INTO \"%s\" %s; ";
-
+    @Override
+    public String tableName() {
         ClassInfo classInfo = getClassInfo();
-        String fieldAndValuesSql = generateInsertSqlFragment(entityList);
-        return String.format(sqlTemplate, classInfo.getTableName(), fieldAndValuesSql);
+        return String.format("\"%s\"", classInfo.getTableName());
     }
-
-    /**
-     * 生成根据 id 查询的 sql
-     *
-     * @param id id
-     * @return java.lang.String
-     * @author Jerry.X.He
-     * @date 2021-01-17 19:21
-     */
-    protected String generateFindByIdSql(String id) {
-        String sqlTemplate = " SELECT * FROM \"%s\" %s; ";
-
-        ClassInfo classInfo = getClassInfo();
-        String whereCond = String.format(" WHERE ID = '%s' LIMIT 1 ", id);
-        return String.format(sqlTemplate, classInfo.getTableName(), whereCond);
-    }
-
-    /**
-     * 生成 allBy 的查询 sql
-     *
-     * @param queryMap queryMap
-     * @param andOr    andOr
-     * @return java.lang.String
-     * @author Jerry.X.He
-     * @date 2021-01-19 15:51
-     */
-    protected String generateAllBySql(JSONObject queryMap, boolean andOr) {
-        return generateAllBySql0(queryMap, andOr, "*");
-    }
-
-    protected String generateCountBySql(JSONObject queryMap, boolean andOr) {
-        return generateAllBySql0(queryMap, andOr, "COUNT(*)");
-    }
-
-    /**
-     * 生成查询给定的字段列表, 根据给定的 queryMap 构造查询条件的 sql
-     *
-     * @param queryMap       queryMap
-     * @param andOr          andOr
-     * @param queryFieldList queryFieldList
-     * @return java.lang.String
-     * @author Jerry.X.He
-     * @date 2021-01-19 15:53
-     */
-    protected String generateAllBySql0(JSONObject queryMap, boolean andOr, String queryFieldList) {
-        String sqlTemplate = " SELECT %s FROM \"%s\" %s; ";
-
-        ClassInfo classInfo = getClassInfo();
-        String whereCondFragment = generateWhereCond(queryMap, andOr);
-        String whereCond = SqlConstants.EMPTY_STR;
-        if (StringUtils.isNotBlank(whereCondFragment)) {
-            whereCond = String.format(" WHERE %s ", whereCondFragment);
-        }
-        return String.format(sqlTemplate, queryFieldList, classInfo.getTableName(), whereCond);
-    }
-
-    /**
-     * 生成查询给定的字段列表, 根据给定的 queryMap 构造查询条件的分页查询 sql
-     *
-     * @param queryMap queryMap
-     * @param andOr    andOr
-     * @param pageNo   pageNo
-     * @param pageSize pageSize
-     * @return java.lang.String
-     * @author Jerry.X.He
-     * @date 2021-01-19 16:24
-     */
-    protected String generateListBySql(JSONObject queryMap, boolean andOr, int pageNo, int pageSize) {
-        String sqlTemplate = " SELECT * FROM \"%s\" %s LIMIT %s OFFSET %s ; ";
-
-        ClassInfo classInfo = getClassInfo();
-        String whereCondFragment = generateWhereCond(queryMap, andOr);
-        String whereCond = SqlConstants.EMPTY_STR;
-        if (StringUtils.isNotBlank(whereCondFragment)) {
-            whereCond = String.format(" WHERE %s ", whereCondFragment);
-        }
-
-        int pageOffset = (pageNo - 1) * pageSize;
-        return String.format(sqlTemplate, classInfo.getTableName(), whereCond, pageSize, pageOffset);
-    }
-
-    /**
-     * 获取更新给定的实体的 更新语句
-     *
-     * @param entity entity
-     * @return java.lang.String
-     * @author Jerry.X.He
-     * @date 2021-01-17 18:59
-     */
-    protected String generateUpdateSql(T entity, boolean notNull) {
-        String sqlTemplate = " UPDATE SET \"%s\" %s; ";
-
-        ClassInfo classInfo = getClassInfo();
-        String updateFragment = generateUpdateSqlFragment(entity, notNull);
-        String id = getId(entity);
-        String whereCond = String.format(" WHERE ID = '%s' ", id);
-        return String.format(sqlTemplate, classInfo.getTableName(), updateFragment, whereCond);
-    }
-
-    /**
-     * 获取更新给定的实体的 根据 queryMap 更新语句
-     *
-     * @param entity  entity
-     * @param notNull notNull
-     * @return java.lang.String
-     * @author Jerry.X.He
-     * @date 2021-01-19 16:50
-     */
-    protected String generateUpdateBySql(T entity, JSONObject queryMap, boolean andOr, boolean notNull) {
-        String sqlTemplate = " UPDATE \"%s\" %s %s; ";
-
-        ClassInfo classInfo = getClassInfo();
-        String updateFragment = generateUpdateSqlFragment(entity, notNull);
-        String whereCondFragment = generateWhereCond(queryMap, andOr);
-        String whereCond = SqlConstants.EMPTY_STR;
-        if (StringUtils.isNotBlank(whereCondFragment)) {
-            whereCond = String.format(" WHERE %s ", whereCondFragment);
-        }
-
-        return String.format(sqlTemplate, classInfo.getTableName(), updateFragment, whereCond);
-    }
-
-    /**
-     * 生成根据 id 删除的 sql
-     *
-     * @param id id
-     * @return java.lang.String
-     * @author Jerry.X.He
-     * @date 2021-01-17 19:21
-     */
-    protected String generateDeleteByIdSql(String id) {
-        String sqlTemplate = " DELETE FROM \"%s\" %s; ";
-
-        ClassInfo classInfo = getClassInfo();
-        String whereCond = String.format(" WHERE ID = '%s' ", id);
-        return String.format(sqlTemplate, classInfo.getTableName(), whereCond);
-    }
-
-    /**
-     * 生成根据 queryMap 删除的 sql
-     *
-     * @param queryMap queryMap
-     * @param andOr    andOr
-     * @return java.lang.String
-     * @author Jerry.X.He
-     * @date 2021-01-19 17:00
-     */
-    protected String generateDeleteBySql(JSONObject queryMap, boolean andOr) {
-        String sqlTemplate = " DELETE FROM \"%s\" %s; ";
-
-        ClassInfo classInfo = getClassInfo();
-        String whereCond = SqlConstants.EMPTY_STR;
-        String whereCondFragment = generateWhereCond(queryMap, andOr);
-        if (StringUtils.isNotBlank(whereCondFragment)) {
-            whereCond = String.format(" WHERE %s ", whereCondFragment);
-        }
-        return String.format(sqlTemplate, classInfo.getTableName(), whereCond);
-    }
-
 
 }

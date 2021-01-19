@@ -1,5 +1,6 @@
 package com.hx.repository.base.sqlite;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.hx.repository.base.interf.AbstractEntityJdbcRepository;
 import com.hx.repository.consts.FieldOperator;
@@ -11,9 +12,12 @@ import com.hx.repository.utils.FieldInfoUtils;
 import com.hx.repository.utils.FieldOperatorUtils;
 import com.hx.repository.utils.QueryMapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * AbstractSqliteEntityJdbcRepository
@@ -23,6 +27,208 @@ import java.util.List;
  * @date 2021-01-17 18:32
  */
 public abstract class AbstractSqliteEntityJdbcRepository<T> extends AbstractEntityJdbcRepository<T> {
+
+    /**
+     * 获取 当前实体对应的 tableName
+     *
+     * @return
+     * @author Jerry.X.He
+     * @date 2021-01-19 17:27
+     */
+    public abstract String tableName();
+
+    // -------------------------------------- 通用工具方法 --------------------------------------
+
+    /**
+     * 执行给定的查询 返回给定的结果列表
+     *
+     * @param sql sql
+     * @return java.util.List<T>
+     * @author Jerry.X.He
+     * @date 2021-01-19 17:56
+     */
+    protected List<T> allBy0(String sql) {
+        List<Map<String, Object>> list = getJdbcTemplate().queryForList(sql);
+        if (CollectionUtils.isEmpty(list)) {
+            return Collections.emptyList();
+        }
+
+        List<T> result = new ArrayList<>();
+        for (Map<String, Object> json : list) {
+            result.add(fromJson((JSONObject) JSON.toJSON(json)));
+        }
+        return result;
+    }
+
+    // -------------------------------------- 间接工具方法 --------------------------------------
+
+    /**
+     * 获取插入给定的实体的 插入语句
+     *
+     * @param entityList entityList
+     * @return java.lang.String
+     * @author Jerry.X.He
+     * @date 2021-01-17 11:11
+     */
+    protected String generateInsertSql(List<T> entityList) {
+        String sqlTemplate = " INSERT INTO %s %s; ";
+
+        String fieldAndValuesSql = generateInsertSqlFragment(entityList);
+        return String.format(sqlTemplate, tableName(), fieldAndValuesSql);
+    }
+
+    /**
+     * 生成根据 id 查询的 sql
+     *
+     * @param id id
+     * @return java.lang.String
+     * @author Jerry.X.He
+     * @date 2021-01-17 19:21
+     */
+    protected String generateFindByIdSql(String id) {
+        String sqlTemplate = " SELECT * FROM %s %s; ";
+
+        String whereCond = String.format(" WHERE ID = '%s' LIMIT 1 ", id);
+        return String.format(sqlTemplate, tableName(), whereCond);
+    }
+
+    /**
+     * 生成 allBy 的查询 sql
+     *
+     * @param queryMap queryMap
+     * @param andOr    andOr
+     * @return java.lang.String
+     * @author Jerry.X.He
+     * @date 2021-01-19 15:51
+     */
+    protected String generateAllBySql(JSONObject queryMap, boolean andOr) {
+        return generateAllBySql0(queryMap, andOr, "*");
+    }
+
+    protected String generateCountBySql(JSONObject queryMap, boolean andOr) {
+        return generateAllBySql0(queryMap, andOr, "COUNT(*)");
+    }
+
+    /**
+     * 生成查询给定的字段列表, 根据给定的 queryMap 构造查询条件的 sql
+     *
+     * @param queryMap       queryMap
+     * @param andOr          andOr
+     * @param queryFieldList queryFieldList
+     * @return java.lang.String
+     * @author Jerry.X.He
+     * @date 2021-01-19 15:53
+     */
+    protected String generateAllBySql0(JSONObject queryMap, boolean andOr, String queryFieldList) {
+        String sqlTemplate = " SELECT %s FROM %s %s; ";
+
+        String whereCondFragment = generateWhereCond(queryMap, andOr);
+        String whereCond = SqlConstants.EMPTY_STR;
+        if (StringUtils.isNotBlank(whereCondFragment)) {
+            whereCond = String.format(" WHERE %s ", whereCondFragment);
+        }
+        return String.format(sqlTemplate, queryFieldList, tableName(), whereCond);
+    }
+
+    /**
+     * 生成查询给定的字段列表, 根据给定的 queryMap 构造查询条件的分页查询 sql
+     *
+     * @param queryMap queryMap
+     * @param andOr    andOr
+     * @param pageNo   pageNo
+     * @param pageSize pageSize
+     * @return java.lang.String
+     * @author Jerry.X.He
+     * @date 2021-01-19 16:24
+     */
+    protected String generateListBySql(JSONObject queryMap, boolean andOr, int pageNo, int pageSize) {
+        String sqlTemplate = " SELECT * FROM %s %s LIMIT %s OFFSET %s ; ";
+
+        String whereCondFragment = generateWhereCond(queryMap, andOr);
+        String whereCond = SqlConstants.EMPTY_STR;
+        if (StringUtils.isNotBlank(whereCondFragment)) {
+            whereCond = String.format(" WHERE %s ", whereCondFragment);
+        }
+
+        int pageOffset = (pageNo - 1) * pageSize;
+        return String.format(sqlTemplate, tableName(), whereCond, pageSize, pageOffset);
+    }
+
+    /**
+     * 获取更新给定的实体的 更新语句
+     *
+     * @param entity entity
+     * @return java.lang.String
+     * @author Jerry.X.He
+     * @date 2021-01-17 18:59
+     */
+    protected String generateUpdateSql(T entity, boolean notNull) {
+        String sqlTemplate = " UPDATE SET %s %s; ";
+
+        String updateFragment = generateUpdateSqlFragment(entity, notNull);
+        String id = getId(entity);
+        String whereCond = String.format(" WHERE ID = '%s' ", id);
+        return String.format(sqlTemplate, tableName(), updateFragment, whereCond);
+    }
+
+    /**
+     * 获取更新给定的实体的 根据 queryMap 更新语句
+     *
+     * @param entity  entity
+     * @param notNull notNull
+     * @return java.lang.String
+     * @author Jerry.X.He
+     * @date 2021-01-19 16:50
+     */
+    protected String generateUpdateBySql(T entity, JSONObject queryMap, boolean andOr, boolean notNull) {
+        String sqlTemplate = " UPDATE %s %s %s; ";
+
+        String updateFragment = generateUpdateSqlFragment(entity, notNull);
+        String whereCondFragment = generateWhereCond(queryMap, andOr);
+        String whereCond = SqlConstants.EMPTY_STR;
+        if (StringUtils.isNotBlank(whereCondFragment)) {
+            whereCond = String.format(" WHERE %s ", whereCondFragment);
+        }
+
+        return String.format(sqlTemplate, tableName(), updateFragment, whereCond);
+    }
+
+    /**
+     * 生成根据 id 删除的 sql
+     *
+     * @param id id
+     * @return java.lang.String
+     * @author Jerry.X.He
+     * @date 2021-01-17 19:21
+     */
+    protected String generateDeleteByIdSql(String id) {
+        String sqlTemplate = " DELETE FROM %s %s; ";
+
+        String whereCond = String.format(" WHERE ID = '%s' ", id);
+        return String.format(sqlTemplate, tableName(), whereCond);
+    }
+
+    /**
+     * 生成根据 queryMap 删除的 sql
+     *
+     * @param queryMap queryMap
+     * @param andOr    andOr
+     * @return java.lang.String
+     * @author Jerry.X.He
+     * @date 2021-01-19 17:00
+     */
+    protected String generateDeleteBySql(JSONObject queryMap, boolean andOr) {
+        String sqlTemplate = " DELETE FROM %s %s; ";
+
+        String whereCond = SqlConstants.EMPTY_STR;
+        String whereCondFragment = generateWhereCond(queryMap, andOr);
+        if (StringUtils.isNotBlank(whereCondFragment)) {
+            whereCond = String.format(" WHERE %s ", whereCondFragment);
+        }
+        return String.format(sqlTemplate, tableName(), whereCond);
+    }
+
+    // -------------------------------------- 更细节封装 sql 相关 --------------------------------------
 
     /**
      * 生成插入语句的 sql 片段
