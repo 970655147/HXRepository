@@ -139,7 +139,7 @@ public abstract class AbstractSqliteTaskEntityJdbcRepository<T> extends Abstract
         ClassInfo classInfo = getClassInfo();
         TaskContext context = TaskContextThreadLocal.get();
         // assert context != null
-        String taskId = context.getTaskId();
+        String taskId = context == null ? null : context.getTaskId();
         return String.format("\"%s\".\"%s\"", taskId, classInfo.getTableName());
     }
 

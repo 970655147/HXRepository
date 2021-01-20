@@ -32,7 +32,7 @@ import static com.hx.repository.tests.sqlite.Test01TradeRepository.newRandomTrad
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class Test02TaskTradeRepository extends BaseServiceTest {
 
-    private static final String TEST_TASK_ID = "taskId";
+    private static final String TEST_TASK_ID = "main";
 
     @Before
     public void test01ClearTrades() {

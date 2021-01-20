@@ -24,13 +24,21 @@ public interface MainEntityJdbcRepository<T> {
      */
     int add(T entity);
 
+    /**
+     * 保存给定的实体
+     *
+     * @param entityList entityList
+     * @return int
+     * @author Jerry.X.He
+     * @date 2021-01-15 17:28
+     */
     int addAll(List<T> entityList);
 
     /**
      * 根据 id 查询记录信息
      *
      * @param id id
-     * @return
+     * @return T
      * @author Jerry.X.He
      * @date 2021-01-17 19:18
      */
@@ -41,7 +49,7 @@ public interface MainEntityJdbcRepository<T> {
      *
      * @param queryMap queryMap
      * @param andOr    andOr
-     * @return
+     * @return List
      * @author Jerry.X.He
      * @date 2021-01-19 14:54
      */
@@ -52,7 +60,7 @@ public interface MainEntityJdbcRepository<T> {
      *
      * @param queryMap queryMap
      * @param andOr    andOr
-     * @return
+     * @return Page
      * @author Jerry.X.He
      * @date 2021-01-19 16:14
      */
@@ -63,7 +71,7 @@ public interface MainEntityJdbcRepository<T> {
      *
      * @param queryMap queryMap
      * @param andOr    andOr
-     * @return
+     * @return int
      * @author Jerry.X.He
      * @date 2021-01-19 14:54
      */
@@ -73,12 +81,20 @@ public interface MainEntityJdbcRepository<T> {
      * 根据实体的 id 进行更新
      *
      * @param entity entity
-     * @return
+     * @return int
      * @author Jerry.X.He
      * @date 2021-01-17 18:56
      */
     int update(T entity);
 
+    /**
+     * 根据实体的 id 进行更新
+     *
+     * @param entity entity
+     * @return int
+     * @author Jerry.X.He
+     * @date 2021-01-17 18:56
+     */
     int updateNotNull(T entity);
 
     /**
@@ -87,31 +103,49 @@ public interface MainEntityJdbcRepository<T> {
      * @param entity   entity
      * @param queryMap queryMap
      * @param andOr    andOr
-     * @return
+     * @return int
      * @author Jerry.X.He
      * @date 2021-01-19 16:45
      */
     int updateBy(T entity, JSONObject queryMap, boolean andOr);
 
+    /**
+     * 根据 queryMap 构造条件更新符合条件的实体
+     *
+     * @param entity   entity
+     * @param queryMap queryMap
+     * @param andOr    andOr
+     * @return int
+     * @author Jerry.X.He
+     * @date 2021-01-19 16:45
+     */
     int updateNotNullBy(T entity, JSONObject queryMap, boolean andOr);
 
     /**
      * 保存给定的实体, 不存在则新增, 存在则更新
      *
      * @param entity entity
-     * @return
+     * @return int
      * @author Jerry.X.He
      * @date 2021-01-17 19:26
      */
     int save(T entity);
 
+    /**
+     * 保存给定的实体, 不存在则新增, 存在则更新
+     *
+     * @param entity entity
+     * @return int
+     * @author Jerry.X.He
+     * @date 2021-01-17 19:26
+     */
     int saveNotNull(T entity);
 
     /**
      * 根据 id 删除记录
      *
      * @param id id
-     * @return
+     * @return int
      * @author Jerry.X.He
      * @date 2021-01-17 19:32
      */
@@ -122,7 +156,7 @@ public interface MainEntityJdbcRepository<T> {
      *
      * @param queryMap queryMap
      * @param andOr    andOr
-     * @return
+     * @return int
      * @author Jerry.X.He
      * @date 2021-01-19 16:45
      */

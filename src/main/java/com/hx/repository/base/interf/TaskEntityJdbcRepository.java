@@ -17,6 +17,7 @@ public interface TaskEntityJdbcRepository<T> {
     /**
      * 保存给定的实体
      *
+     * @param taskId taskId
      * @param entity entity
      * @return int
      * @author Jerry.X.He
@@ -24,6 +25,15 @@ public interface TaskEntityJdbcRepository<T> {
      */
     int add(String taskId, T entity);
 
+    /**
+     * 保存给定的实体
+     *
+     * @param taskId     taskId
+     * @param entityList entityList
+     * @return int
+     * @author Jerry.X.He
+     * @date 2021-01-15 17:28
+     */
     int addAll(String taskId, List<T> entityList);
 
     /**
@@ -31,7 +41,7 @@ public interface TaskEntityJdbcRepository<T> {
      *
      * @param taskId taskId
      * @param id     id
-     * @return
+     * @return T
      * @author Jerry.X.He
      * @date 2021-01-17 19:18
      */
@@ -40,9 +50,10 @@ public interface TaskEntityJdbcRepository<T> {
     /**
      * 根据指定的 queryMap 查询所有的记录
      *
+     * @param taskId   taskId
      * @param queryMap queryMap
      * @param andOr    andOr
-     * @return
+     * @return List
      * @author Jerry.X.He
      * @date 2021-01-19 14:54
      */
@@ -51,9 +62,10 @@ public interface TaskEntityJdbcRepository<T> {
     /**
      * 根据指定的 queryMap 分页查询
      *
+     * @param taskId   taskId
      * @param queryMap queryMap
      * @param andOr    andOr
-     * @return
+     * @return Page
      * @author Jerry.X.He
      * @date 2021-01-19 16:14
      */
@@ -62,9 +74,10 @@ public interface TaskEntityJdbcRepository<T> {
     /**
      * 查询符合 queryMap 查询所有的记录的数量
      *
+     * @param taskId   taskId
      * @param queryMap queryMap
      * @param andOr    andOr
-     * @return
+     * @return int
      * @author Jerry.X.He
      * @date 2021-01-19 14:54
      */
@@ -75,26 +88,47 @@ public interface TaskEntityJdbcRepository<T> {
      *
      * @param taskId taskId
      * @param entity entity
-     * @return
+     * @return int
      * @author Jerry.X.He
      * @date 2021-01-17 18:56
      */
     int update(String taskId, T entity);
 
+    /**
+     * 根据实体的 id 进行更新
+     *
+     * @param taskId taskId
+     * @param entity entity
+     * @return int
+     * @author Jerry.X.He
+     * @date 2021-01-17 18:56
+     */
     int updateNotNull(String taskId, T entity);
 
     /**
      * 根据 queryMap 构造条件更新符合条件的实体
      *
+     * @param taskId   taskId
      * @param entity   entity
      * @param queryMap queryMap
      * @param andOr    andOr
-     * @return
+     * @return int
      * @author Jerry.X.He
      * @date 2021-01-19 16:45
      */
     int updateBy(String taskId, T entity, JSONObject queryMap, boolean andOr);
 
+    /**
+     * 根据 queryMap 构造条件更新符合条件的实体
+     *
+     * @param taskId   taskId
+     * @param entity   entity
+     * @param queryMap queryMap
+     * @param andOr    andOr
+     * @return int
+     * @author Jerry.X.He
+     * @date 2021-01-19 16:45
+     */
     int updateNotNullBy(String taskId, T entity, JSONObject queryMap, boolean andOr);
 
     /**
@@ -102,12 +136,21 @@ public interface TaskEntityJdbcRepository<T> {
      *
      * @param taskId taskId
      * @param entity entity
-     * @return
+     * @return int
      * @author Jerry.X.He
      * @date 2021-01-17 19:26
      */
     int save(String taskId, T entity);
 
+    /**
+     * 保存给定的实体, 不存在则新增, 存在则更新
+     *
+     * @param taskId taskId
+     * @param entity entity
+     * @return int
+     * @author Jerry.X.He
+     * @date 2021-01-17 19:26
+     */
     int saveNotNull(String taskId, T entity);
 
     /**
@@ -115,7 +158,7 @@ public interface TaskEntityJdbcRepository<T> {
      *
      * @param taskId taskId
      * @param id     id
-     * @return
+     * @return int
      * @author Jerry.X.He
      * @date 2021-01-17 19:32
      */
@@ -124,9 +167,10 @@ public interface TaskEntityJdbcRepository<T> {
     /**
      * 根据 queryMap 构造条件删除符合条件的实体
      *
+     * @param taskId   taskId
      * @param queryMap queryMap
      * @param andOr    andOr
-     * @return
+     * @return int
      * @author Jerry.X.He
      * @date 2021-01-19 16:45
      */
