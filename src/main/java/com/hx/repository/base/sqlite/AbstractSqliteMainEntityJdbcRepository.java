@@ -6,6 +6,7 @@ import com.hx.repository.base.interf.MainEntityJdbcRepository;
 import com.hx.repository.model.ClassInfo;
 import com.hx.repository.model.Page;
 import com.hx.repository.utils.QueryMapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Collections;
@@ -69,7 +70,8 @@ public abstract class AbstractSqliteMainEntityJdbcRepository<T> extends Abstract
     @Override
     public int countBy(JSONObject queryMap, boolean andOr) {
         String sql = generateCountBySql(queryMap, andOr);
-        return getJdbcTemplate().queryForObject(sql, Integer.class);
+        String result = getJdbcTemplate().queryForObject(sql, String.class);
+        return StringUtils.isNumeric(result) ? Integer.valueOf(result) : 0;
     }
 
     @Override

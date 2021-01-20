@@ -9,6 +9,7 @@ import com.hx.repository.model.ClassInfo;
 import com.hx.repository.model.Page;
 import com.hx.repository.utils.QueryMapUtils;
 import com.hx.repository.utils.TaskContextUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Collections;
@@ -73,7 +74,8 @@ public abstract class AbstractSqliteTaskEntityJdbcRepository<T> extends Abstract
     @Override
     public int countBy(String taskId, JSONObject queryMap, boolean andOr) {
         String sql = doGenerateSqlWithTaskId(taskId, (param) -> generateCountBySql(queryMap, andOr));
-        return getJdbcTemplate().queryForObject(sql, Integer.class);
+        String result = getJdbcTemplate().queryForObject(sql, String.class);
+        return StringUtils.isNumeric(result) ? Integer.valueOf(result) : 0;
     }
 
     @Override
@@ -152,7 +154,7 @@ public abstract class AbstractSqliteTaskEntityJdbcRepository<T> extends Abstract
      * @author Jerry.X.He
      * @date 2021-01-19 17:47
      */
-    protected String doGenerateSqlWithTaskId(String taskId, Function<Void, String> sqlFunc) {
+    private String doGenerateSqlWithTaskId(String taskId, Function<Void, String> sqlFunc) {
         TaskContext oldContext = TaskContextThreadLocal.get();
         try {
             TaskContext newContext = TaskContextUtils.lookUp(taskId);
