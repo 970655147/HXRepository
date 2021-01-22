@@ -105,6 +105,25 @@ public abstract class AbstractSqliteEntityJdbcRepository<T> extends AbstractEnti
     }
 
     /**
+     * 生成 allDistinctBy 的查询 sql
+     *
+     * @param queryMap queryMap
+     * @param andOr    andOr
+     * @return java.lang.String
+     * @author Jerry.X.He
+     * @date 2021-01-22 16:16
+     */
+    protected String generateAllDistinctBySql(String columnName, JSONObject queryMap, boolean andOr) {
+        String queryFieldList = String.format("DISTINCT(%s)", columnName);
+        return generateAllBySql0(queryMap, andOr, queryFieldList);
+    }
+
+    protected String generateCountDistinctBySql(String columnName, JSONObject queryMap, boolean andOr) {
+        String queryFieldList = String.format("COUNT(DISTINCT(%s))", columnName);
+        return generateAllBySql0(queryMap, andOr, queryFieldList);
+    }
+
+    /**
      * 生成查询给定的字段列表, 根据给定的 queryMap 构造查询条件的 sql
      *
      * @param queryMap       queryMap

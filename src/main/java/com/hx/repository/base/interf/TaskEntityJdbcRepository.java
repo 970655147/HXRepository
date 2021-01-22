@@ -84,6 +84,32 @@ public interface TaskEntityJdbcRepository<T> {
     int countBy(String taskId, JSONObject queryMap, boolean andOr);
 
     /**
+     * 根据指定的 queryMap 查询所有的指定列并去重
+     *
+     * @param taskId    taskId
+     * @param fieldName fieldName
+     * @param queryMap  queryMap
+     * @param andOr     andOr
+     * @return List
+     * @author Jerry.X.He
+     * @date 2021-01-19 14:54
+     */
+    List<String> allDistinctBy(String taskId, String fieldName, JSONObject queryMap, boolean andOr);
+
+    /**
+     * 查询符合 queryMap 查询所有的指定列并去重的数量
+     *
+     * @param taskId    taskId
+     * @param fieldName fieldName
+     * @param queryMap  queryMap
+     * @param andOr     andOr
+     * @return int
+     * @author Jerry.X.He
+     * @date 2021-01-19 14:54
+     */
+    int countDistinctBy(String taskId, String fieldName, JSONObject queryMap, boolean andOr);
+
+    /**
      * 根据实体的 id 进行更新
      *
      * @param taskId taskId

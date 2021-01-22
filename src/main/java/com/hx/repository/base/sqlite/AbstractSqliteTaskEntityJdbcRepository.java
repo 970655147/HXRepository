@@ -79,6 +79,23 @@ public abstract class AbstractSqliteTaskEntityJdbcRepository<T> extends Abstract
     }
 
     @Override
+    public List<String> allDistinctBy(String taskId, String fieldName, JSONObject queryMap, boolean andOr) {
+        String columnName = getClassInfo().getField(fieldName).getColumnName();
+        String sql = doGenerateSqlWithTaskId(
+                taskId, (param) -> generateAllDistinctBySql(columnName, queryMap, andOr));
+        return getJdbcTemplate().queryForList(sql, String.class);
+    }
+
+    @Override
+    public int countDistinctBy(String taskId, String fieldName, JSONObject queryMap, boolean andOr) {
+        String columnName = getClassInfo().getField(fieldName).getColumnName();
+        String sql = doGenerateSqlWithTaskId(
+                taskId, (param) -> generateCountDistinctBySql(columnName, queryMap, andOr));
+        String result = getJdbcTemplate().queryForObject(sql, String.class);
+        return StringUtils.isNumeric(result) ? Integer.valueOf(result) : 0;
+    }
+
+    @Override
     public int update(String taskId, T entity) {
         String sql = doGenerateSqlWithTaskId(taskId, (param) -> generateUpdateSql(entity, false));
         return getJdbcTemplate().update(sql);
