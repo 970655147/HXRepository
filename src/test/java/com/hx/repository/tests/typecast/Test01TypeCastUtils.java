@@ -41,19 +41,10 @@ public class Test01TypeCastUtils extends BaseServiceTest {
     }
 
     @Test
-    public void test01GenerateTradeCastWithNone() {
-        Class<Trade> clazz = Trade.class;
-        String filePath = BASE_PATH + "/src/test/resources/ignore/TradeConverter01None.java";
-        saveLines(Arrays.asList(), filePath);
-
-        List<String> lines = TypeCastUtils.generateJsonTypeCaster(clazz, filePath);
-        saveLines(lines, filePath);
-    }
-
-    @Test
     public void test01GenerateTradeCastWithExistsTradeMethod() {
         Class<Trade> clazz = Trade.class;
-        String filePath = BASE_PATH + "/src/test/resources/ignore/TradeConverter01ExistsTradeMethod.java";
+        String filePath = BASE_PATH +
+                          "/src/test/java/com/hx/repository/tests/typecast/ignore/TradeConverter01ExistsTradeMethod.java";
         saveLines(tradeConverter01ExistsTradeMethodCode(), filePath);
 
         List<String> lines = TypeCastUtils.generateJsonTypeCaster(clazz, filePath);
@@ -63,7 +54,8 @@ public class Test01TypeCastUtils extends BaseServiceTest {
     @Test
     public void test01GenerateTradeCastWithNotExistsTradeMethod() {
         Class<Trade> clazz = Trade.class;
-        String filePath = BASE_PATH + "/src/test/resources/ignore/TradeConverter01NotExistsTradeMethod.java";
+        String filePath = BASE_PATH +
+                          "/src/test/java/com/hx/repository/tests/typecast/ignore/TradeConverter01NotExistsTradeMethod.java";
         saveLines(tradeConverter01NotExistsTradeMethodCode(), filePath);
 
         List<String> lines = TypeCastUtils.generateJsonTypeCaster(clazz, filePath);
@@ -102,9 +94,16 @@ public class Test01TypeCastUtils extends BaseServiceTest {
      * @date 2021-01-21 18:14
      */
     private List<String> tradeConverter01ExistsTradeMethodCode() {
-        String code = "// TradeConverter01ExistsTradeMethod\n" +
-                      "public static class TradeConverter01ExistsTradeMethod {\n" +
-                      "    \n" +
+        String code = "package com.hx.repository.tests.typecast.ignore;\n" +
+                      "\n" +
+                      "import com.alibaba.fastjson.JSONObject;\n" +
+                      "import com.hx.repository.domain.Trade;\n" +
+                      "\n" +
+                      "import java.math.BigDecimal;\n" +
+                      "\n" +
+                      "// TradeConverter01ExistsTradeMethod\n" +
+                      "public class TradeConverter01ExistsTradeMethod {\n" +
+                      "\n" +
                       "    public JSONObject castTradeToJson(Trade entity) {\n" +
                       "        JSONObject result = new JSONObject();\n" +
                       "        return result;\n" +
@@ -127,15 +126,22 @@ public class Test01TypeCastUtils extends BaseServiceTest {
      * @date 2021-01-21 18:14
      */
     private List<String> tradeConverter01NotExistsTradeMethodCode() {
-        String code = "// TradeConverter01NotExistsTradeMethod\n" +
-                      "public static class TradeConverter01ExistsTradeMethod {\n" +
-                      "    \n" +
-                      "    public JSONObject castTradeEEEEEToJson(Trade entity) {\n" +
+        String code = "package com.hx.repository.tests.typecast.ignore;\n" +
+                      "\n" +
+                      "import com.alibaba.fastjson.JSONObject;\n" +
+                      "import com.hx.repository.domain.Trade;\n" +
+                      "\n" +
+                      "import java.math.BigDecimal;\n" +
+                      "\n" +
+                      "// TradeConverter01NotExistsTradeMethod\n" +
+                      "public class TradeConverter01NotExistsTradeMethod {\n" +
+                      "\n" +
+                      "    public JSONObject castTrade1ToJson(Trade entity) {\n" +
                       "        JSONObject result = new JSONObject();\n" +
                       "        return result;\n" +
                       "    }\n" +
                       "\n" +
-                      "    public Trade castJsonToTradeEEEEE(JSONObject json) {\n" +
+                      "    public Trade castJsonToTrade1(JSONObject json) {\n" +
                       "        Trade result = new Trade();\n" +
                       "        return result;\n" +
                       "    }\n" +

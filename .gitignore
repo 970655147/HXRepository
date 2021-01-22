@@ -47,5 +47,4 @@ spark-warehouse/
 .mvn
 
 # 单元测试相关需要 ignore 的文件
-/src/test/resources/ignore
-
+/src/test/java/com/hx/repository/tests/typecast/ignore

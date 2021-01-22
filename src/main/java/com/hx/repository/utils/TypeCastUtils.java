@@ -6,10 +6,12 @@ import com.hx.log.util.Constants;
 import com.hx.log.util.Tools;
 import com.hx.repository.model.ClassInfo;
 import com.hx.repository.model.FieldInfo;
+import org.apache.commons.lang3.time.DateFormatUtils;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.function.Function;
 
@@ -21,6 +23,15 @@ import java.util.function.Function;
  * @date 2021-01-19 15:15
  */
 public final class TypeCastUtils {
+
+    /** 默认的缩进 */
+    public static int IDENT = 4;
+    /** 默认的缩进的数量 */
+    public static int IDENT_TIMES_INITIAL = 1;
+    /** 作者 */
+    public static String AUTHOR = "Jerry.X.He";
+    /** 日期格式 */
+    public static String DATE_PATTERN = "yyyy-MM-dd HH:mm";
 
     /**
      * 在给定的文件中生成 给定的 clazz 的 converter
@@ -65,17 +76,20 @@ public final class TypeCastUtils {
         List<FieldInfo> fieldInfoList = classInfo.allFieldInfo();
 
         String methodSignature = generateToJsonSignature(clazz);
-        sb.append(String.format("%s {\n", methodSignature));
-        sb.append("JSONObject result = new JSONObject();\n");
+        int identTimes = IDENT_TIMES_INITIAL;
+        sb.append(generateToJsonDoc(clazz));
+        sb.append(ident(identTimes)).append(String.format("%s {\n", methodSignature));
+        sb.append(ident(identTimes + 1)).append("JSONObject result = new JSONObject();\n");
         for (FieldInfo fieldInfo : fieldInfoList) {
             String putFieldTemplate = "result.%s(\"%s\", entity.%s());\n";
             String fieldName = fieldInfo.getFieldName();
             String fieldSetterMethod = wrapJsonSetterMethod(fieldInfo);
             String fieldGetterMethod = wrapGetterMethod(fieldInfo);
-            sb.append(String.format(putFieldTemplate, fieldSetterMethod, fieldName, fieldGetterMethod));
+            sb.append(ident(identTimes + 1))
+              .append(String.format(putFieldTemplate, fieldSetterMethod, fieldName, fieldGetterMethod));
         }
-        sb.append("return result;\n");
-        sb.append("}\n");
+        sb.append(ident(identTimes + 1)).append("return result;\n");
+        sb.append(ident(identTimes)).append("}\n");
         return sb.toString();
     }
 
@@ -94,18 +108,73 @@ public final class TypeCastUtils {
         String className = clazz.getSimpleName();
 
         String methodSignature = generateFromJsonSignature(clazz);
-        sb.append(String.format("%s {\n", methodSignature));
-        sb.append(String.format("%s result = new %s();\n", className, className));
+        int identTimes = IDENT_TIMES_INITIAL;
+        sb.append(generateFromJsonDoc(clazz));
+        sb.append(ident(identTimes)).append(String.format("%s {\n", methodSignature));
+        sb.append(ident(identTimes + 1)).append(String.format("%s result = new %s();\n", className, className));
         for (FieldInfo fieldInfo : fieldInfoList) {
             String putFieldTemplate = "result.%s(%sjson.%s(\"%s\"));\n";
             String fieldName = fieldInfo.getFieldName();
             String fieldSetterMethod = wrapSetterMethod(fieldInfo);
             String jsonGetterMethod = wrapJsonGetterMethod(fieldInfo);
             String objectForceCast = wrapObjectForceCast(fieldInfo);
-            sb.append(String.format(putFieldTemplate, fieldSetterMethod, objectForceCast, jsonGetterMethod, fieldName));
+            sb.append(ident(identTimes + 1))
+              .append(String.format(putFieldTemplate, fieldSetterMethod, objectForceCast, jsonGetterMethod, fieldName));
         }
-        sb.append("return result;\n");
-        sb.append("}\n");
+        sb.append(ident(identTimes + 1)).append("return result;\n");
+        sb.append(ident(identTimes)).append("}\n");
+        return sb.toString();
+    }
+
+    /**
+     * 生成 toJson 的 javadoc
+     *
+     * @param clazz clazz
+     * @return java.lang.String
+     * @author Jerry.X.He
+     * @date 2021-01-22 13:55
+     */
+    public static <T> String generateToJsonDoc(Class<T> clazz) {
+        String className = clazz.getSimpleName();
+        String toJsonMethodName = generateToJsonName(className);
+
+        StringBuilder sb = new StringBuilder();
+        int identTimes = IDENT_TIMES_INITIAL;
+        sb.append(ident(identTimes)).append("/**").append("\n");
+        sb.append(ident(identTimes)).append(" * ").append(toJsonMethodName).append("\n");
+        sb.append(ident(identTimes)).append(" * ").append("\n");
+        sb.append(ident(identTimes)).append(" * @param entity  entity").append("\n");
+        sb.append(ident(identTimes)).append(" * @return com.alibaba.fastjson.JSONObject").append("\n");
+        sb.append(ident(identTimes)).append(" * @author ").append(AUTHOR).append("\n");
+        sb.append(ident(identTimes)).append(" * @date ")
+          .append(DateFormatUtils.format(new Date(), DATE_PATTERN)).append("\n");
+        sb.append(ident(identTimes)).append(" */").append("\n");
+        return sb.toString();
+    }
+
+    /**
+     * 生成 toJson 的 javadoc
+     *
+     * @param clazz clazz
+     * @return java.lang.String
+     * @author Jerry.X.He
+     * @date 2021-01-22 13:55
+     */
+    public static <T> String generateFromJsonDoc(Class<T> clazz) {
+        String className = clazz.getSimpleName();
+        String toJsonMethodName = generateFromJsonName(className);
+
+        StringBuilder sb = new StringBuilder();
+        int identTimes = IDENT_TIMES_INITIAL;
+        sb.append(ident(identTimes)).append("/**").append("\n");
+        sb.append(ident(identTimes)).append(" * ").append(toJsonMethodName).append("\n");
+        sb.append(ident(identTimes)).append(" * ").append("\n");
+        sb.append(ident(identTimes)).append(" * @param json  json").append("\n");
+        sb.append(ident(identTimes)).append(" * @return ").append(clazz.getName()).append("\n");
+        sb.append(ident(identTimes)).append(" * @author ").append(AUTHOR).append("\n");
+        sb.append(ident(identTimes)).append(" * @date ")
+          .append(DateFormatUtils.format(new Date(), DATE_PATTERN)).append("\n");
+        sb.append(ident(identTimes)).append(" */").append("\n");
         return sb.toString();
     }
 
@@ -143,6 +212,23 @@ public final class TypeCastUtils {
 
     public static String generateFromJsonName(String className) {
         return String.format("castJsonTo%s", className);
+    }
+
+    /**
+     * 生成缩进的字符串
+     *
+     * @param times times
+     * @return java.lang.String
+     * @author Jerry.X.He
+     * @date 2021-01-22 13:48
+     */
+    public static String ident(int times) {
+        int identWithSpace = times * IDENT;
+        StringBuilder result = new StringBuilder(identWithSpace);
+        for (int i = 0; i < identWithSpace; i++) {
+            result.append(" ");
+        }
+        return result.toString();
     }
 
     /**
@@ -454,7 +540,7 @@ public final class TypeCastUtils {
         // 更新
         lines.set(methodStart, methodCode);
         for (int i = methodStart + 1; i <= methodEnd; i++) {
-            lines.remove(i);
+            lines.remove(methodStart + 1);
         }
     }
 
