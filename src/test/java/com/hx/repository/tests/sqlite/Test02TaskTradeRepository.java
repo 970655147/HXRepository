@@ -820,4 +820,47 @@ public class Test02TaskTradeRepository extends BaseServiceTest {
         Log.info(formatLogInfoWithIdx(" test11DeleteBy succeed "));
     }
 
+    @Test
+    public void test12AllDistinctBy() {
+        TaskTradeRepository taskTradeRepository = SpringContext.getBean(TaskTradeRepository.class);
+
+        int loopCount = 15;
+        JSONObject queryMap = new JSONObject();
+
+        List<Trade> tradeList = new ArrayList<>();
+        for (int i = 0; i < loopCount; i++) {
+            tradeList.add(newRandomTrade(i));
+        }
+        int updated = taskTradeRepository.addAll(TEST_TASK_ID, tradeList);
+        Log.info(formatLogInfoWithIdx(" 新增了 {0} 条交易信息 ", updated));
+
+
+        List<String> allSourceCardNumbers = taskTradeRepository.allDistinctBy(
+                TEST_TASK_ID, "sourceCardNumber", queryMap, true);
+        AssertUtils.assert0(allSourceCardNumbers.size(), loopCount, " allSourceCardNumbers.length <> $loopCount ");
+        Log.info(formatLogInfoWithIdx(" test12AllDistinctBy succeed "));
+    }
+
+    @Test
+    public void test13CountDistinctBy() {
+        TaskTradeRepository taskTradeRepository = SpringContext.getBean(TaskTradeRepository.class);
+
+        int loopCount = 15;
+        JSONObject queryMap = new JSONObject();
+
+        List<Trade> tradeList = new ArrayList<>();
+        for (int i = 0; i < loopCount; i++) {
+            tradeList.add(newRandomTrade(i));
+        }
+        int updated = taskTradeRepository.addAll(TEST_TASK_ID, tradeList);
+        Log.info(formatLogInfoWithIdx(" 新增了 {0} 条交易信息 ", updated));
+
+
+        int distincSourceCardNumbers = taskTradeRepository.countDistinctBy(
+                TEST_TASK_ID, "sourceCardNumber", queryMap, true);
+        AssertUtils.assert0(distincSourceCardNumbers, loopCount, " distincSourceCardNumbers <> $loopCount ");
+        Log.info(formatLogInfoWithIdx(" test13CountDistinctBy succeed "));
+    }
+
+
 }
