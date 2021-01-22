@@ -9,10 +9,8 @@ import com.hx.repository.model.FieldInfo;
 import org.apache.commons.lang3.time.DateFormatUtils;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
@@ -41,7 +39,7 @@ public final class TypeCastUtils {
      * @author Jerry.X.He
      * @date 2021-01-20 21:03
      */
-    public static <T> List<String> generateJsonTypeCaster(Class<T> clazz, String filePath) {
+    public static <T> List<String> generateJsonCaster(Class<T> clazz, String filePath) {
         try {
             List<String> lines = new ArrayList<>();
             if (FileUtils.exists(filePath)) {
@@ -63,6 +61,38 @@ public final class TypeCastUtils {
     }
 
     /**
+     * 在给定的文件中生成 类型转换类型 的 converter
+     *
+     * @param sourceClazz sourceClazz
+     * @param targetClazz targetClazz
+     * @param filePath    filePath
+     * @return java.util.List<java.lang.String>
+     * @author Jerry.X.He
+     * @date 2021-01-22 15:13
+     */
+    public static <S, T> List<String> generateToTypeCaster(Class<S> sourceClazz, Class<T> targetClazz,
+                                                           String filePath) {
+        try {
+            List<String> lines = new ArrayList<>();
+            if (FileUtils.exists(filePath)) {
+                lines = Tools.getContentWithList(filePath);
+            }
+
+            generateMethodAndSave(lines, sourceClazz, targetClazz,
+                                  TypeCastUtils::generateToTypeSignature,
+                                  TypeCastUtils::generateToType);
+            generateMethodAndSave(lines, targetClazz, sourceClazz,
+                                  TypeCastUtils::generateToTypeSignature,
+                                  TypeCastUtils::generateToType);
+
+            return lines;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
+    }
+
+    /**
      * 生成给定的类型的 toJson 的相关代码
      *
      * @param clazz clazz
@@ -71,20 +101,21 @@ public final class TypeCastUtils {
      * @date 2021-01-20 19:51
      */
     public static <T> String generateToJson(Class<T> clazz) {
-        StringBuilder sb = new StringBuilder();
         ClassInfo classInfo = ClassInfoUtils.getClassInfo(clazz);
         List<FieldInfo> fieldInfoList = classInfo.allFieldInfo();
 
         String methodSignature = generateToJsonSignature(clazz);
         int identTimes = IDENT_TIMES_INITIAL;
+        StringBuilder sb = new StringBuilder();
         sb.append(generateToJsonDoc(clazz));
         sb.append(ident(identTimes)).append(String.format("%s {\n", methodSignature));
         sb.append(ident(identTimes + 1)).append("JSONObject result = new JSONObject();\n");
         for (FieldInfo fieldInfo : fieldInfoList) {
-            String putFieldTemplate = "result.%s(\"%s\", entity.%s());\n";
             String fieldName = fieldInfo.getFieldName();
             String fieldSetterMethod = wrapJsonSetterMethod(fieldInfo);
             String fieldGetterMethod = wrapGetterMethod(fieldInfo);
+
+            String putFieldTemplate = "result.%s(\"%s\", entity.%s());\n";
             sb.append(ident(identTimes + 1))
               .append(String.format(putFieldTemplate, fieldSetterMethod, fieldName, fieldGetterMethod));
         }
@@ -102,29 +133,75 @@ public final class TypeCastUtils {
      * @date 2021-01-20 20:11
      */
     public static <T> String generateFromJson(Class<T> clazz) {
-        StringBuilder sb = new StringBuilder();
         ClassInfo classInfo = ClassInfoUtils.getClassInfo(clazz);
         List<FieldInfo> fieldInfoList = classInfo.allFieldInfo();
         String className = clazz.getSimpleName();
 
         String methodSignature = generateFromJsonSignature(clazz);
         int identTimes = IDENT_TIMES_INITIAL;
+        StringBuilder sb = new StringBuilder();
         sb.append(generateFromJsonDoc(clazz));
         sb.append(ident(identTimes)).append(String.format("%s {\n", methodSignature));
         sb.append(ident(identTimes + 1)).append(String.format("%s result = new %s();\n", className, className));
         for (FieldInfo fieldInfo : fieldInfoList) {
-            String putFieldTemplate = "result.%s(%sjson.%s(\"%s\"));\n";
             String fieldName = fieldInfo.getFieldName();
             String fieldSetterMethod = wrapSetterMethod(fieldInfo);
-            String jsonGetterMethod = wrapJsonGetterMethod(fieldInfo);
+            String fieldGetterMethod = wrapJsonGetterMethod(fieldInfo);
             String objectForceCast = wrapObjectForceCast(fieldInfo);
+
+            String putFieldTemplate = "result.%s(%sjson.%s(\"%s\"));\n";
+            Object[] putFieldArgs = new Object[]{fieldSetterMethod, objectForceCast, fieldGetterMethod, fieldName};
             sb.append(ident(identTimes + 1))
-              .append(String.format(putFieldTemplate, fieldSetterMethod, objectForceCast, jsonGetterMethod, fieldName));
+              .append(String.format(putFieldTemplate, putFieldArgs));
         }
         sb.append(ident(identTimes + 1)).append("return result;\n");
         sb.append(ident(identTimes)).append("}\n");
         return sb.toString();
     }
+
+    /**
+     * 生成 sourceClazz -> targetClazz 的类型转换
+     *
+     * @param sourceClazz sourceClazz
+     * @param targetClazz targetClazz
+     * @return java.lang.String
+     * @author Jerry.X.He
+     * @date 2021-01-22 14:16
+     */
+    public static <S, T> String generateToType(Class<S> sourceClazz, Class<T> targetClazz) {
+        ClassInfo sourceClassInfo = ClassInfoUtils.getClassInfo(sourceClazz);
+        List<FieldInfo> sourceFieldList = sourceClassInfo.allFieldInfo();
+        ClassInfo targetClassInfo = ClassInfoUtils.getClassInfo(targetClazz);
+        List<FieldInfo> targetFieldList = targetClassInfo.allFieldInfo();
+        List<FieldInfo> jointFieldList = jointFieldInfo(sourceFieldList, targetFieldList);
+        String targetTypeName = targetClazz.getSimpleName();
+
+        String methodSignature = generateToTypeSignature(sourceClazz, targetClazz);
+        int identTimes = IDENT_TIMES_INITIAL;
+        StringBuilder sb = new StringBuilder();
+        sb.append(generateToTypeDoc(sourceClazz, targetClazz));
+        sb.append(ident(identTimes)).append(String.format("%s {\n", methodSignature));
+        sb.append(ident(identTimes + 1))
+          .append(String.format("%s result = new %s();\n", targetTypeName, targetTypeName));
+        for (FieldInfo fieldInfo : jointFieldList) {
+            String fieldName = fieldInfo.getFieldName();
+            String fieldSetterMethod = wrapSetterMethod(FieldInfoUtils.lookUpByFieldName(targetFieldList, fieldName));
+            String fieldGetterMethod = wrapGetterMethod(FieldInfoUtils.lookUpByFieldName(sourceFieldList, fieldName));
+            String objectForceCast = wrapObjectForceCast(fieldInfo);
+
+            String putFieldTemplate = "result.%s(%sentity.%s());\n";
+            Object[] putFieldArgs = new Object[]{fieldSetterMethod, objectForceCast, fieldGetterMethod};
+            sb.append(ident(identTimes + 1))
+              .append(String.format(putFieldTemplate, putFieldArgs));
+        }
+        sb.append(ident(identTimes + 1)).append("return result;\n");
+        sb.append(ident(identTimes)).append("}\n");
+        return sb.toString();
+    }
+
+    // ----------------------------------------- 辅助方法 -----------------------------------------
+
+    // ----------------------------------------- toJson 相关 -----------------------------------------
 
     /**
      * 生成 toJson 的 javadoc
@@ -213,6 +290,89 @@ public final class TypeCastUtils {
     public static String generateFromJsonName(String className) {
         return String.format("castJsonTo%s", className);
     }
+
+    // ----------------------------------------- toType 相关 -----------------------------------------
+
+    /**
+     * 计算 来源字段列表 和 目标字段列表 中相同的字段列表
+     *
+     * @param sourceFieldList sourceFieldList
+     * @param targetFieldList targetFieldList
+     * @return java.util.List<com.hx.repository.model.FieldInfo>
+     * @author Jerry.X.He
+     * @date 2021-01-22 14:27
+     */
+    public static List<FieldInfo> jointFieldInfo(List<FieldInfo> sourceFieldList, List<FieldInfo> targetFieldList) {
+        List<FieldInfo> result = new ArrayList<>();
+        outerLoop:
+        for (FieldInfo sourceField : sourceFieldList) {
+            for (FieldInfo targetField : targetFieldList) {
+                if (Objects.equals(sourceField.getFieldName(), targetField.getFieldName())) {
+                    result.add(sourceField);
+                    continue outerLoop;
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 生成 来源类型 到 目标类型的转换方法
+     *
+     * @param sourceClazz sourceClazz
+     * @param targetClazz targetClazz
+     * @return java.lang.String
+     * @author Jerry.X.He
+     * @date 2021-01-22 14:31
+     */
+    public static <S, T> String generateToTypeSignature(Class<S> sourceClazz, Class<T> targetClazz) {
+        String sourceTypeName = sourceClazz.getSimpleName();
+        String targetTypeName = targetClazz.getSimpleName();
+        String methodName = generateToTypeName(sourceClazz, targetClazz);
+        return String.format("public %s %s(%s entity)", targetTypeName, methodName, sourceTypeName);
+    }
+
+    /**
+     * 生成 来源类型 到 目标类型的转换方法方法形成
+     *
+     * @param sourceClazz sourceClazz
+     * @param targetClazz targetClazz
+     * @return java.lang.String
+     * @author Jerry.X.He
+     * @date 2021-01-22 14:32
+     */
+    public static <S, T> String generateToTypeName(Class<S> sourceClazz, Class<T> targetClazz) {
+        return String.format("cast%sTo%s", sourceClazz.getSimpleName(), targetClazz.getSimpleName());
+    }
+
+    /**
+     * 生成 toJson 的 javadoc
+     *
+     * @param sourceClazz sourceClazz
+     * @param targetClazz targetClazz
+     * @return java.lang.String
+     * @author Jerry.X.He
+     * @date 2021-01-22 13:55
+     */
+    public static <S, T> String generateToTypeDoc(Class<S> sourceClazz, Class<T> targetClazz) {
+        String targetTypeName = targetClazz.getSimpleName();
+        String toTypeMethodName = generateToTypeName(sourceClazz, targetClazz);
+
+        StringBuilder sb = new StringBuilder();
+        int identTimes = IDENT_TIMES_INITIAL;
+        sb.append(ident(identTimes)).append("/**").append("\n");
+        sb.append(ident(identTimes)).append(" * ").append(toTypeMethodName).append("\n");
+        sb.append(ident(identTimes)).append(" * ").append("\n");
+        sb.append(ident(identTimes)).append(" * @param entity  entity").append("\n");
+        sb.append(ident(identTimes)).append(" * @return ").append(targetTypeName).append("\n");
+        sb.append(ident(identTimes)).append(" * @author ").append(AUTHOR).append("\n");
+        sb.append(ident(identTimes)).append(" * @date ")
+          .append(DateFormatUtils.format(new Date(), DATE_PATTERN)).append("\n");
+        sb.append(ident(identTimes)).append(" */").append("\n");
+        return sb.toString();
+    }
+
+    // ----------------------------------------- 其他公用 -----------------------------------------
 
     /**
      * 生成缩进的字符串
@@ -510,6 +670,31 @@ public final class TypeCastUtils {
         int methodStart = locateMethodStart(lines, methodLocator);
         int methodEnd = locateMethodEnd(lines, methodStart);
         String methodCode = methodGeneratorFunc.apply(clazz);
+        saveMethodToLines(lines, methodCode, methodStart, methodEnd);
+    }
+
+    /**
+     * 生成给定的方法, 并且保存给定的方法到 lines
+     *
+     * @param lines               lines
+     * @param sourceClazz         sourceClazz
+     * @param targetClazz         targetClazz
+     * @param methodLocatorFunc   methodLocatorFunc
+     * @param methodGeneratorFunc methodGeneratorFunc
+     * @return void
+     * @author Jerry.X.He
+     * @date 2021-01-22 15:18
+     */
+    public static <S, T> void generateMethodAndSave(
+            List<String> lines,
+            Class<S> sourceClazz,
+            Class<T> targetClazz,
+            BiFunction<Class, Class, String> methodLocatorFunc,
+            BiFunction<Class, Class, String> methodGeneratorFunc) {
+        String methodLocator = methodLocatorFunc.apply(sourceClazz, targetClazz);
+        int methodStart = locateMethodStart(lines, methodLocator);
+        int methodEnd = locateMethodEnd(lines, methodStart);
+        String methodCode = methodGeneratorFunc.apply(sourceClazz, targetClazz);
         saveMethodToLines(lines, methodCode, methodStart, methodEnd);
     }
 
