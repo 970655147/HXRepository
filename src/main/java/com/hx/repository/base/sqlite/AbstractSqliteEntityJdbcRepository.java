@@ -135,12 +135,8 @@ public abstract class AbstractSqliteEntityJdbcRepository<T> extends AbstractEnti
      */
     protected String generateAllBySql0(JSONObject queryMap, boolean andOr, String queryFieldList) {
         String sqlTemplate = " SELECT %s FROM %s %s; ";
-        String whereCondFragment = generateWhereCond(queryMap, andOr);
-        String whereCond = SqlConstants.EMPTY_STR;
-        if (StringUtils.isNotBlank(whereCondFragment)) {
-            whereCond = String.format(" WHERE %s ", whereCondFragment);
-        }
-        return String.format(sqlTemplate, queryFieldList, tableName(), whereCond);
+        String whereCondAndOrderBy = generateWhereCondAndOrderBy(queryMap, andOr);
+        return String.format(sqlTemplate, queryFieldList, tableName(), whereCondAndOrderBy);
     }
 
     /**
@@ -156,14 +152,9 @@ public abstract class AbstractSqliteEntityJdbcRepository<T> extends AbstractEnti
      */
     protected String generateListBySql(JSONObject queryMap, boolean andOr, int pageNo, int pageSize) {
         String sqlTemplate = " SELECT * FROM %s %s LIMIT %s OFFSET %s ; ";
-        String whereCondFragment = generateWhereCond(queryMap, andOr);
-        String whereCond = SqlConstants.EMPTY_STR;
-        if (StringUtils.isNotBlank(whereCondFragment)) {
-            whereCond = String.format(" WHERE %s ", whereCondFragment);
-        }
-
+        String whereCondAndOrderBy = generateWhereCondAndOrderBy(queryMap, andOr);
         int pageOffset = (pageNo - 1) * pageSize;
-        return String.format(sqlTemplate, tableName(), whereCond, pageSize, pageOffset);
+        return String.format(sqlTemplate, tableName(), whereCondAndOrderBy, pageSize, pageOffset);
     }
 
     /**
@@ -276,6 +267,33 @@ public abstract class AbstractSqliteEntityJdbcRepository<T> extends AbstractEnti
     }
 
     /**
+     * 生成 where & orderBy
+     *
+     * @param queryMap queryMap
+     * @param andOr    andOr
+     * @return java.lang.String
+     * @author Jerry.X.He
+     * @date 2021-01-22 17:48
+     */
+    protected String generateWhereCondAndOrderBy(JSONObject queryMap, boolean andOr) {
+        String whereCondFragment = generateWhereCond(queryMap, andOr);
+        String orderByFragment = generateOrderBy(queryMap);
+
+        String whereCond = SqlConstants.EMPTY_STR;
+        if (StringUtils.isNotBlank(whereCondFragment)) {
+            whereCond = (" WHERE " + whereCondFragment);
+        }
+
+        String orderBy = SqlConstants.EMPTY_STR;
+        if (StringUtils.isNotBlank(orderByFragment)) {
+            orderBy = (" ORDER BY " + orderByFragment);
+        }
+
+        String sqlTemplate = "%s %s";
+        return String.format(sqlTemplate, whereCond, orderBy);
+    }
+
+    /**
      * 根据给定的 queryMap 封装查询语句
      *
      * @param queryMap queryMap
@@ -297,6 +315,28 @@ public abstract class AbstractSqliteEntityJdbcRepository<T> extends AbstractEnti
         }
 
         String joinSep = andOr ? SqlConstants.OPERATOR_AND : SqlConstants.OPERATOR_OR;
+        return StringUtils.join(fieldConditionList, joinSep);
+    }
+
+    /**
+     * 根据给定的 queryMap 封装 orderBy 语句
+     *
+     * @param queryMap queryMap
+     * @return java.lang.String
+     * @author Jerry.X.He
+     * @date 2021-01-22 17:20
+     */
+    protected String generateOrderBy(JSONObject queryMap) {
+        List<FieldCondition> fieldOrderBys = parseOrderBys(queryMap);
+        List<String> fieldConditionList = new ArrayList<>();
+        String condTemplate = " %s %s ";
+        for (FieldCondition cond : fieldOrderBys) {
+            String orderBy = cond.getColumnName();
+            String ascOrDesc = (Boolean) cond.getValue() ? SqlConstants.SORT_ASC : SqlConstants.SORT_DESC;
+            fieldConditionList.add(String.format(condTemplate, orderBy, ascOrDesc));
+        }
+
+        String joinSep = SqlConstants.COMMA;
         return StringUtils.join(fieldConditionList, joinSep);
     }
 
@@ -324,6 +364,39 @@ public abstract class AbstractSqliteEntityJdbcRepository<T> extends AbstractEnti
             FieldOperator queryOperator = QueryMapUtils.parseQueryOperator(key);
             Object value = queryMap.get(key);
             result.add(new FieldCondition(fieldInfo.getColumnName(), queryOperator, value, fieldInfo));
+        }
+        return result;
+    }
+
+    /**
+     * 解析给定的 queryMap 里面的 orderBy
+     *
+     * @param queryMap queryMap
+     * @return java.util.List<com.hx.repository.model.FieldCondition>
+     * @author Jerry.X.He
+     * @date 2021-01-22 17:24
+     */
+    protected List<FieldCondition> parseOrderBys(JSONObject queryMap) {
+        ClassInfo classInfo = getClassInfo();
+        List<FieldInfo> allFieldList = classInfo.allFieldInfo();
+
+        List<FieldCondition> result = new ArrayList<>();
+        for (String key : queryMap.keySet()) {
+            // 如果不是 OrderBy 配置
+            String orderByField = QueryMapUtils.parseOrderByField(key);
+            if (StringUtils.isBlank(orderByField)) {
+                continue;
+            }
+
+            FieldInfo fieldInfo = FieldInfoUtils.lookUpByFieldName(allFieldList, orderByField);
+            // unknown field, skip
+            if (fieldInfo == null) {
+                continue;
+            }
+
+            String valueStr = String.valueOf(queryMap.get(key));
+            boolean ascOrDesc = Boolean.valueOf(valueStr);
+            result.add(new FieldCondition(fieldInfo.getColumnName(), FieldOperator.EQ, ascOrDesc, fieldInfo));
         }
         return result;
     }

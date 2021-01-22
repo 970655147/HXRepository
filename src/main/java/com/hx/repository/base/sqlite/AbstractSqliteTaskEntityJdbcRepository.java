@@ -59,8 +59,8 @@ public abstract class AbstractSqliteTaskEntityJdbcRepository<T> extends Abstract
 
     @Override
     public Page<T> listBy(String taskId, JSONObject queryMap, boolean andOr) {
-        int pageNo = QueryMapUtils.getPageNo(queryMap);
-        int pageSize = QueryMapUtils.getPageSize(queryMap);
+        int pageNo = QueryMapUtils.parsePageNo(queryMap);
+        int pageSize = QueryMapUtils.parsePageSize(queryMap);
         int totalRecord = countBy(taskId, queryMap, andOr);
 
         String sql = doGenerateSqlWithTaskId(taskId, (param) -> generateListBySql(queryMap, andOr, pageNo, pageSize));

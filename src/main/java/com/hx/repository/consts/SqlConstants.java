@@ -13,10 +13,21 @@ public final class SqlConstants {
 
     /** empty string */
     public static final String EMPTY_STR = "";
+    /** empty string */
+    public static final String COMMA = ",";
+
     /** and */
     public static final String OPERATOR_AND = "AND";
     /** or */
     public static final String OPERATOR_OR = "OR";
+
+    /** asc */
+    public static final String SORT_ASC = "ASC";
+    /** desc */
+    public static final String SORT_DESC = "DESC";
+
+    /** ORDER_BY_SUFFIX */
+    public static final String ORDER_BY_SUFFIX = "$OrderBy";
 
     // disable constructor
     private SqlConstants() {

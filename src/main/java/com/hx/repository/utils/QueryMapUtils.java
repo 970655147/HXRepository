@@ -3,6 +3,7 @@ package com.hx.repository.utils;
 import com.alibaba.fastjson.JSONObject;
 import com.hx.log.util.Tools;
 import com.hx.repository.consts.FieldOperator;
+import com.hx.repository.consts.SqlConstants;
 import com.hx.repository.consts.WebContextConstants;
 import org.apache.commons.lang3.StringUtils;
 
@@ -85,7 +86,7 @@ public final class QueryMapUtils {
      * @author Jerry.X.He
      * @date 2021-01-19 16:16
      */
-    public static int getPageNo(JSONObject queryMap) {
+    public static int parsePageNo(JSONObject queryMap) {
         String valueInQueryMap = queryMap.getString(WebContextConstants.PAGE_NO);
         if (!StringUtils.isNumeric(valueInQueryMap)) {
             return 1;
@@ -93,12 +94,43 @@ public final class QueryMapUtils {
         return Integer.valueOf(valueInQueryMap);
     }
 
-    public static int getPageSize(JSONObject queryMap) {
+    public static int parsePageSize(JSONObject queryMap) {
         String valueInQueryMap = queryMap.getString(WebContextConstants.PAGE_SIZE);
         if (!StringUtils.isNumeric(valueInQueryMap)) {
             return 1;
         }
         return Integer.valueOf(valueInQueryMap);
+    }
+
+    /**
+     * 判断给定的 key 是否是 xxOrderBy
+     *
+     * @param key key
+     * @return boolean
+     * @author Jerry.X.He
+     * @date 2021-01-22 17:33
+     */
+    public static boolean isOrderBy(String key) {
+        if (key == null) {
+            return false;
+        }
+        return key.endsWith(SqlConstants.ORDER_BY_SUFFIX);
+    }
+
+    /**
+     * 判断给定的 key 是否是 xxOrderBy, 获取排序字段
+     *
+     * @param key key
+     * @return java.lang.String
+     * @author Jerry.X.He
+     * @date 2021-01-22 17:35
+     */
+    public static String parseOrderByField(String key) {
+        if (!isOrderBy(key)) {
+            return null;
+        }
+
+        return key.substring(0, key.length() - SqlConstants.ORDER_BY_SUFFIX.length());
     }
 
 
