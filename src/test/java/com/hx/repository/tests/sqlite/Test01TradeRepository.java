@@ -637,6 +637,58 @@ public class Test01TradeRepository extends BaseServiceTest {
     }
 
     @Test
+    public void test05ListByOrderBySourceCardNumberAsc() {
+        TradeRepository tradeRepository = SpringContext.getBean(TradeRepository.class);
+
+        int loopCount = 15;
+        int pageNo = 1, pageSize = 12;
+
+        List<Trade> tradeList = new ArrayList<>();
+        for (int i = 0; i < loopCount; i++) {
+            tradeList.add(newRandomTrade(i));
+        }
+        int updated = tradeRepository.addAll(tradeList);
+        Log.info(formatLogInfoWithIdx(" 新增了 {0} 条交易信息 ", updated));
+
+        JSONObject queryMap = new JSONObject();
+        queryMap.put("sourceCardNumber$OrderBy", true);
+        List<Trade> tradeListInDb = tradeRepository.allBy(queryMap, true);
+
+        String compareField = tradeListInDb.get(0).getSourceCardNumber();
+        for (Trade trade : tradeListInDb) {
+            int compareWithField = compareField.compareTo(trade.getSourceCardNumber());
+            AssertUtils.assert0(compareWithField <= 0, " not order by sourceCardNumber$OrderBy asc ");
+            compareField = trade.getSourceCardNumber();
+        }
+    }
+
+    @Test
+    public void test05ListByOrderBySourceCardNumberDesc() {
+        TradeRepository tradeRepository = SpringContext.getBean(TradeRepository.class);
+
+        int loopCount = 15;
+        int pageNo = 1, pageSize = 12;
+
+        List<Trade> tradeList = new ArrayList<>();
+        for (int i = 0; i < loopCount; i++) {
+            tradeList.add(newRandomTrade(i));
+        }
+        int updated = tradeRepository.addAll(tradeList);
+        Log.info(formatLogInfoWithIdx(" 新增了 {0} 条交易信息 ", updated));
+
+        JSONObject queryMap = new JSONObject();
+        queryMap.put("sourceCardNumber$OrderBy", false);
+        List<Trade> tradeListInDb = tradeRepository.allBy(queryMap, true);
+
+        String compareField = tradeListInDb.get(0).getSourceCardNumber();
+        for (Trade trade : tradeListInDb) {
+            int compareWithField = compareField.compareTo(trade.getSourceCardNumber());
+            AssertUtils.assert0(compareWithField >= 0, " not order by sourceCardNumber$OrderBy desc ");
+            compareField = trade.getSourceCardNumber();
+        }
+    }
+
+    @Test
     public void test06Update() {
         TradeRepository tradeRepository = SpringContext.getBean(TradeRepository.class);
 
