@@ -7,6 +7,8 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.util.UUID;
 
+import static com.hx.repository.consts.SqlConstants.*;
+
 /**
  * BaseEntity
  *
@@ -20,48 +22,55 @@ public class BaseEntity {
 
     @Id
     @GeneratedValue(generator = "uuid2")
-    @Column(name = "ID")
+    @Column(name = COLUMN_ID)
     private String id;
 
-    @Column(name = "SOURCE", nullable = false, updatable = false)
-    private String source = "SYSTEM";
+    @Column(name = COLUMN_SOURCE, nullable = false, updatable = false)
+    private String source;
 
-    @Column(name = "ENABLED", nullable = false)
-    private Boolean enabled = Boolean.TRUE;
+    @Column(name = COLUMN_ENABLED, nullable = false)
+    private Boolean enabled;
 
-    @Column(name = "LOCKED", nullable = false)
-    private Boolean locked = Boolean.FALSE;
+    @Column(name = COLUMN_LOCKED, nullable = false)
+    private Boolean locked;
 
-    @Column(name = "DELETED", nullable = false)
-    private Boolean deleted = Boolean.FALSE;
-
-    @Basic
-    @Column(name = "CREATED_BY", updatable = false)
-    private String createdBy;
+    @Column(name = COLUMN_DELETED, nullable = false)
+    private Boolean deleted;
 
     @Basic
-    @Column(name = "CREATED_BY_USER", updatable = false)
-    private String createdByUser;
+    @Column(name = COLUMN_CREATED_USER_ID, updatable = false)
+    private String createUserId;
 
     @Basic
-    @Column(name = "CREATED_ON", updatable = false)
-    private Long createdOn;
+    @Column(name = COLUMN_CREATED_AT, updatable = false)
+    private Long createdAt;
 
     @Basic
-    @Column(name = "LAST_UPDATED_BY")
-    private String lastUpdatedBy;
+    @Column(name = COLUMN_UPDATED_USER_ID)
+    private String updateUserId;
 
     @Basic
-    @Column(name = "LAST_UPDATED_BY_USER")
-    private String lastUpdatedByUser;
-
-    @Basic
-    @Column(name = "LAST_UPDATED_ON")
-    private Long lastUpdatedOn;
+    @Column(name = COLUMN_UPDATED_AT)
+    private Long updatedAt;
 
     @Version
-    @Column(name = "VERSION_NUMBER")
-    private long versionNumber = 1;
+    @Column(name = COLUMN_VERSION)
+    private long version;
+
+    /**
+     * default constructor
+     *
+     * @return BaseEntity
+     * @author Jerry.X.He
+     * @date 2021-01-24 17:51
+     */
+    public BaseEntity() {
+        source = COLUMN_DEFAULT_SOURCE;
+        enabled = COLUMN_DEFAULT_ENABLED;
+        locked = COLUMN_DEFAULT_LOCKED;
+        deleted = COLUMN_DEFAULT_DELETED;
+        version = COLUMN_DEFAULT_VERSION;
+    }
 
     @PrePersist
     public void prePersist() {
@@ -69,22 +78,19 @@ public class BaseEntity {
             id = UUID.randomUUID().toString();
         }
 
-        createdBy = UserContextThreadLocal.newIfNecessary().getUserId();
-        createdByUser = UserContextThreadLocal.newIfNecessary().getUserName();
-        createdOn = System.currentTimeMillis();
+        createUserId = UserContextThreadLocal.newIfNecessary().getUserId();
+        createdAt = System.currentTimeMillis();
 
-        lastUpdatedBy = createdBy;
-        lastUpdatedByUser = createdByUser;
-        lastUpdatedOn = createdOn;
+        updateUserId = createUserId;
+        updatedAt = createdAt;
 
-        versionNumber = 1;
+        version = 1;
     }
 
     @PreUpdate
     public void preUpdate() {
-        lastUpdatedBy = UserContextThreadLocal.newIfNecessary().getUserId();
-        lastUpdatedByUser = UserContextThreadLocal.newIfNecessary().getUserName();
-        lastUpdatedOn = System.currentTimeMillis();
+        updateUserId = UserContextThreadLocal.newIfNecessary().getUserId();
+        updatedAt = System.currentTimeMillis();
     }
 
 }

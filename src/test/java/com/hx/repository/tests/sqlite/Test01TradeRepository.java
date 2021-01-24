@@ -967,12 +967,10 @@ public class Test01TradeRepository extends BaseServiceTest {
         trade.setMac(String.format("mac-%s", idx));
         trade.setSerialNumber(idx);
 
-        trade.setCreatedBy("a50c5403-c58b-4d9a-bb7b-3c6c520f5942");
-        trade.setCreatedByUser("hexiong");
-        trade.setCreatedOn(System.currentTimeMillis());
-        trade.setLastUpdatedBy("a50c5403-c58b-4d9a-bb7b-3c6c520f5942");
-        trade.setLastUpdatedByUser("hexiong");
-        trade.setLastUpdatedOn(System.currentTimeMillis());
+        trade.setCreateUserId("a50c5403-c58b-4d9a-bb7b-3c6c520f5942");
+        trade.setCreatedAt(System.currentTimeMillis());
+        trade.setUpdateUserId("a50c5403-c58b-4d9a-bb7b-3c6c520f5942");
+        trade.setUpdatedAt(System.currentTimeMillis());
         return trade;
     }
 

@@ -26,7 +26,7 @@ public final class FieldInfoUtils {
         Tools.assert0("can't instantiate !");
     }
 
-    /** BaseEntity.versionNumber */
+    /** BaseEntity.version */
     public static Field BASE_ENTITY_VERSION_NUMBER_FIELD;
     /** 上一次创建的对象 */
     public static WeakReference<Object> LAST_CREATED_INSTANCE_REF = new WeakReference<>(null);
@@ -118,7 +118,7 @@ public final class FieldInfoUtils {
     }
 
     /**
-     * 获取 BaseEntity 的 versionNumber 字段
+     * 获取 BaseEntity 的 version 字段
      *
      * @return java.lang.reflect.Field
      * @author Jerry.X.He

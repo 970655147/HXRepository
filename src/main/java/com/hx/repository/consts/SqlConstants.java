@@ -11,6 +11,9 @@ import com.hx.log.util.Tools;
  */
 public final class SqlConstants {
 
+    /** 列名 : ID */
+    public static final String COLUMN_ID = "ID";
+
     /** empty string */
     public static final String EMPTY_STR = "";
     /** empty string */
@@ -28,11 +31,37 @@ public final class SqlConstants {
 
     /** ORDER_BY_SUFFIX */
     public static final String ORDER_BY_SUFFIX = "$OrderBy";
-
+    /** 列名 : SOURCE */
+    public static final String COLUMN_SOURCE = "SOURCE";
+    /** 列名 : ENABLED */
+    public static final String COLUMN_ENABLED = "ENABLED";
+    /** 列名 : LOCKED */
+    public static final String COLUMN_LOCKED = "LOCKED";
+    /** 列名 : DELETED */
+    public static final String COLUMN_DELETED = "DELETED";
+    /** 列名 : CREATED_AT */
+    public static final String COLUMN_CREATED_AT = "CREATED_AT";
+    /** 列名 : CREATED_USER_ID */
+    public static final String COLUMN_CREATED_USER_ID = "CREATED_USER_ID";
+    /** 列名 : UPDATED_AT */
+    public static final String COLUMN_UPDATED_AT = "UPDATED_AT";
+    /** 列名 : UPDATED_USER_ID */
+    public static final String COLUMN_UPDATED_USER_ID = "UPDATED_USER_ID";
+    /** 列名 : VERSION */
+    public static final String COLUMN_VERSION = "VERSION";
+    /** 列名 : 默认的 SOURCE */
+    public static final String COLUMN_DEFAULT_SOURCE = "HXRepo";
+    /** 列名 : 默认的 ENABLED */
+    public static final Boolean COLUMN_DEFAULT_ENABLED = Boolean.TRUE;
+    /** 列名 : 默认的 LOCKED */
+    public static final Boolean COLUMN_DEFAULT_LOCKED = Boolean.FALSE;
+    /** 列名 : 默认的 DELETED */
+    public static final Boolean COLUMN_DEFAULT_DELETED = Boolean.FALSE;
+    /** 列名 : 默认的 SOURCE */
+    public static final Integer COLUMN_DEFAULT_VERSION = 1;
     // disable constructor
     private SqlConstants() {
         Tools.assert0("can't instantiate !");
     }
-
 
 }

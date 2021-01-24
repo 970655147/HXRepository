@@ -13,6 +13,7 @@ import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+import static com.hx.repository.consts.SqlConstants.COLUMN_ID;
 import static com.hx.repository.utils.TypeCastUtils.*;
 
 /**
@@ -88,7 +89,7 @@ public final class SqliteUtils {
         }
 
         if (BaseEntity.class.isAssignableFrom(clazz)) {
-            sb.append(ident(identTimes + 1)).append("PRIMARY KEY (ID),\n");
+            sb.append(ident(identTimes + 1)).append(String.format("PRIMARY KEY (%s),\n", COLUMN_ID));
         }
         Tools.removeLastSep(sb, ",\n");
         sb.append("\n");

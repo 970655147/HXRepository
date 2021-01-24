@@ -17,6 +17,9 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 
+import static com.hx.repository.consts.SqlConstants.COLUMN_ID;
+import static com.hx.repository.consts.SqlConstants.COLUMN_VERSION;
+
 /**
  * AbstractSqliteEntityJdbcRepository
  *
@@ -128,7 +131,7 @@ public abstract class AbstractSqliteEntityJdbcRepository<T> extends AbstractEnti
      */
     protected String generateFindByIdSql(String id) {
         String sqlTemplate = " SELECT * FROM %s %s; ";
-        String whereCond = String.format(" WHERE ID = '%s' LIMIT 1 ", id);
+        String whereCond = String.format(" WHERE %s = '%s' LIMIT 1 ", COLUMN_ID, id);
         return String.format(sqlTemplate, tableName(), whereCond);
     }
 
@@ -215,11 +218,11 @@ public abstract class AbstractSqliteEntityJdbcRepository<T> extends AbstractEnti
         String updateFragment = generateUpdateSqlFragment(entity, notNull);
 
         String id = getId(entity);
-        String whereCond = String.format(" WHERE ID = '%s' ", id);
-        // 如果是 BaseEntity, 带上 versionNumber
+        String whereCond = String.format(" WHERE %s = '%s' ", COLUMN_ID, id);
+        // 如果是 BaseEntity, 带上 version
         if (isBaseEntity()) {
-            long versionNumber = ((BaseEntity) entity).getVersionNumber();
-            whereCond += String.format(" AND VERSION_NUMBER = %s ", versionNumber);
+            long version = ((BaseEntity) entity).getVersion();
+            whereCond += String.format(" AND %s = %s ", COLUMN_VERSION, version);
         }
         return String.format(sqlTemplate, tableName(), updateFragment, whereCond);
     }
@@ -255,7 +258,7 @@ public abstract class AbstractSqliteEntityJdbcRepository<T> extends AbstractEnti
      */
     protected String generateDeleteByIdSql(String id) {
         String sqlTemplate = " DELETE FROM %s %s; ";
-        String whereCond = String.format(" WHERE ID = '%s' ", id);
+        String whereCond = String.format(" WHERE %s = '%s' ", COLUMN_ID, id);
         return String.format(sqlTemplate, tableName(), whereCond);
     }
 
