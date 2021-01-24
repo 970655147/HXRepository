@@ -2,17 +2,13 @@ package com.hx.repository.utils;
 
 import com.hx.log.util.Tools;
 import com.hx.repository.model.ClassInfo;
-import com.hx.repository.model.FieldInfo;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.persistence.Column;
 import javax.persistence.Table;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+
+import static com.hx.repository.utils.FieldInfoUtils.parseFieldInfoListFromClass;
 
 /**
  * ClassInfoUtils
@@ -93,42 +89,5 @@ public final class ClassInfoUtils {
         result.setSuperClassInfo(parseClassInfoFromClass(clazz.getSuperclass()));
         return result;
     }
-
-    /**
-     * 从 class 中解析 字段信息
-     *
-     * @return java.util.List<com.hx.test08.Test20CodeGenerator.FieldInfo>
-     * @author Jerry.X.He
-     * @date 2020-11-19 09:55
-     */
-    private static <T> List<FieldInfo> parseFieldInfoListFromClass(Class<T> clazz) {
-        List<FieldInfo> result = new ArrayList<>();
-        for (Field field : clazz.getDeclaredFields()) {
-            if (Modifier.isStatic(field.getModifiers())) {
-                continue;
-            }
-
-            FieldInfo fieldInfo = new FieldInfo();
-            Column columnAnno = field.getDeclaredAnnotation(Column.class);
-            String columnName = Tools.camel2UnderLine(field.getName()).toUpperCase();
-            if (columnAnno != null && StringUtils.isNotBlank(columnAnno.name())) {
-                columnName = columnAnno.name();
-            }
-            boolean nullable = true;
-            if (columnAnno != null) {
-                nullable = columnAnno.nullable();
-            }
-
-            fieldInfo.setFieldName(field.getName());
-            fieldInfo.setColumnName(columnName);
-            fieldInfo.setCommentInfo(field.getName());
-            fieldInfo.setNullable(nullable);
-            fieldInfo.setField(field);
-            result.add(fieldInfo);
-        }
-
-        return result;
-    }
-
 
 }

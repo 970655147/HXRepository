@@ -25,12 +25,14 @@ public abstract class AbstractSqliteMainEntityJdbcRepository<T> extends Abstract
 
     @Override
     public int add(T entity) {
+        prePersist(entity);
         String sql = generateInsertSql(Collections.singletonList(entity));
         return getJdbcTemplate().update(sql);
     }
 
     @Override
     public int addAll(List<T> entityList) {
+        prePersist(entityList);
         String sql = generateInsertSql(entityList);
         return getJdbcTemplate().update(sql);
     }
@@ -91,24 +93,28 @@ public abstract class AbstractSqliteMainEntityJdbcRepository<T> extends Abstract
 
     @Override
     public int update(T entity) {
+        preUpdate(entity);
         String sql = generateUpdateSql(entity, false);
         return getJdbcTemplate().update(sql);
     }
 
     @Override
     public int updateNotNull(T entity) {
+        preUpdate(entity);
         String sql = generateUpdateSql(entity, true);
         return getJdbcTemplate().update(sql);
     }
 
     @Override
     public int updateBy(T entity, JSONObject queryMap, boolean andOr) {
+        preUpdate(entity);
         String sql = generateUpdateBySql(entity, queryMap, andOr, false);
         return getJdbcTemplate().update(sql);
     }
 
     @Override
     public int updateNotNullBy(T entity, JSONObject queryMap, boolean andOr) {
+        preUpdate(entity);
         String sql = generateUpdateBySql(entity, queryMap, andOr, true);
         return getJdbcTemplate().update(sql);
     }

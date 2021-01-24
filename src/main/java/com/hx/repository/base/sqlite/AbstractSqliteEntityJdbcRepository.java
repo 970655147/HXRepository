@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.hx.repository.base.interf.AbstractEntityJdbcRepository;
 import com.hx.repository.consts.FieldOperator;
 import com.hx.repository.consts.SqlConstants;
+import com.hx.repository.domain.BaseEntity;
 import com.hx.repository.model.ClassInfo;
 import com.hx.repository.model.FieldCondition;
 import com.hx.repository.model.FieldInfo;
@@ -55,6 +56,50 @@ public abstract class AbstractSqliteEntityJdbcRepository<T> extends AbstractEnti
             result.add(fromJson((JSONObject) JSON.toJSON(json)));
         }
         return result;
+    }
+
+    /**
+     * 持久化之前 需要处理的业务
+     *
+     * @param entityList entityList
+     * @return java.util.List<T>
+     * @author Jerry.X.He
+     * @date 2021-01-24 15:15
+     */
+    protected void prePersist(List<T> entityList) {
+        for (T entity : entityList) {
+            if (isBaseEntity()) {
+                ((BaseEntity) entity).prePersist();
+            }
+        }
+    }
+
+    /**
+     * 持久化之前 需要处理的业务
+     *
+     * @param entity entity
+     * @return java.util.List<T>
+     * @author Jerry.X.He
+     * @date 2021-01-24 15:15
+     */
+    protected void prePersist(T entity) {
+        if (isBaseEntity()) {
+            ((BaseEntity) entity).prePersist();
+        }
+    }
+
+    /**
+     * 更新实体之前 需要处理的业务
+     *
+     * @param entity entity
+     * @return java.util.List<T>
+     * @author Jerry.X.He
+     * @date 2021-01-24 15:15
+     */
+    protected void preUpdate(T entity) {
+        if (isBaseEntity()) {
+            ((BaseEntity) entity).preUpdate();
+        }
     }
 
     // -------------------------------------- 间接工具方法 --------------------------------------
@@ -168,8 +213,14 @@ public abstract class AbstractSqliteEntityJdbcRepository<T> extends AbstractEnti
     protected String generateUpdateSql(T entity, boolean notNull) {
         String sqlTemplate = " UPDATE %s SET %s %s; ";
         String updateFragment = generateUpdateSqlFragment(entity, notNull);
+
         String id = getId(entity);
         String whereCond = String.format(" WHERE ID = '%s' ", id);
+        // 如果是 BaseEntity, 带上 versionNumber
+        if (isBaseEntity()) {
+            long versionNumber = ((BaseEntity) entity).getVersionNumber();
+            whereCond += String.format(" AND VERSION_NUMBER = %s ", versionNumber);
+        }
         return String.format(sqlTemplate, tableName(), updateFragment, whereCond);
     }
 
@@ -253,6 +304,11 @@ public abstract class AbstractSqliteEntityJdbcRepository<T> extends AbstractEnti
             JSONObject entityJson = toJson(entity);
             List<String> valueList = new ArrayList<>();
             for (FieldInfo field : allFieldList) {
+                // 如果不可在 INSERT, 过滤掉
+                if (!field.isInsertable()) {
+                    continue;
+                }
+
                 Object fieldValueObj = entityJson.get(field.getFieldName());
                 String fieldValue = wrapFieldValueSql(fieldValueObj, field);
                 valueList.add(fieldValue);
@@ -417,7 +473,20 @@ public abstract class AbstractSqliteEntityJdbcRepository<T> extends AbstractEnti
         List<String> setValueList = new ArrayList<>();
         for (FieldInfo field : allFieldList) {
             String columnName = field.getColumnName();
+            // 如果不可在 UPDATE, 过滤掉
+            if (!field.isUpdatable()) {
+                continue;
+            }
+            // 如果是数值 增量更新 的字段, 直接处理
+            if (field.isUpdateIncr()) {
+                String fieldUpdated = String.format(" (%s + %s) ", columnName, field.getUpdateIncrOffset());
+                String fieldValueUpdate = String.format(" %s = %s ", columnName, fieldUpdated);
+                setValueList.add(fieldValueUpdate);
+                continue;
+            }
+
             Object fieldValueObj = entityJson.get(field.getFieldName());
+            // 如果是 updateNotNull, 并且 value 为 null, 直接跳过
             if (notNull && fieldValueObj == null) {
                 continue;
             }

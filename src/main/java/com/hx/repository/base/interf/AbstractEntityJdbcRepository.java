@@ -2,7 +2,7 @@ package com.hx.repository.base.interf;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.hx.repository.domain.AbstractAuditable;
+import com.hx.repository.domain.BaseEntity;
 import com.hx.repository.model.ClassInfo;
 import com.hx.repository.model.FieldInfo;
 import com.hx.repository.utils.ClassInfoUtils;
@@ -26,6 +26,9 @@ public abstract class AbstractEntityJdbcRepository<T> {
 
     /** 暂存的 classInfo */
     private ClassInfo<T> classInfo;
+
+    /** 是否是继承自 BaseEntity */
+    private Boolean isBaseEntity;
 
     /**
      * 获取 jdbcTemplate
@@ -58,8 +61,8 @@ public abstract class AbstractEntityJdbcRepository<T> {
      * @date 2021-01-17 19:29
      */
     public String getId(T entity) {
-        if (entity instanceof AbstractAuditable) {
-            return ((AbstractAuditable) entity).getId();
+        if (isBaseEntity()) {
+            return ((BaseEntity) entity).getId();
         }
         return toJson(entity).getString("id");
     }
@@ -78,6 +81,37 @@ public abstract class AbstractEntityJdbcRepository<T> {
 
         classInfo = ClassInfoUtils.getClassInfo(getClazz());
         return classInfo;
+    }
+
+    /**
+     * 是否继承自 BaseEntity
+     *
+     * @return boolean
+     * @author Jerry.X.He
+     * @date 2021-01-24 15:11
+     */
+    public boolean isBaseEntity() {
+        if (isBaseEntity != null) {
+            return isBaseEntity;
+        }
+
+        isBaseEntity = BaseEntity.class.isAssignableFrom(getClazz());
+        return isBaseEntity;
+    }
+
+    /**
+     * 将 entity 转换为 BaseEntity
+     *
+     * @param entity entity
+     * @return com.hx.repository.domain.BaseEntity
+     * @author Jerry.X.He
+     * @date 2021-01-24 15:12
+     */
+    public BaseEntity castBaseEntity(T entity) {
+        if (!isBaseEntity()) {
+            return null;
+        }
+        return (BaseEntity) entity;
     }
 
     // -------------------------------------- 部分子类选择重写 --------------------------------------

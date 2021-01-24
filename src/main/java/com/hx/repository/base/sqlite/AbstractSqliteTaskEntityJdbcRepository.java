@@ -29,12 +29,14 @@ public abstract class AbstractSqliteTaskEntityJdbcRepository<T> extends Abstract
 
     @Override
     public int add(String taskId, T entity) {
+        prePersist(entity);
         String sql = doGenerateSqlWithTaskId(taskId, (param) -> generateInsertSql(Collections.singletonList(entity)));
         return getJdbcTemplate().update(sql);
     }
 
     @Override
     public int addAll(String taskId, List<T> entityList) {
+        prePersist(entityList);
         String sql = doGenerateSqlWithTaskId(taskId, (param) -> generateInsertSql(entityList));
         return getJdbcTemplate().update(sql);
     }
@@ -97,24 +99,28 @@ public abstract class AbstractSqliteTaskEntityJdbcRepository<T> extends Abstract
 
     @Override
     public int update(String taskId, T entity) {
+        preUpdate(entity);
         String sql = doGenerateSqlWithTaskId(taskId, (param) -> generateUpdateSql(entity, false));
         return getJdbcTemplate().update(sql);
     }
 
     @Override
     public int updateNotNull(String taskId, T entity) {
+        preUpdate(entity);
         String sql = doGenerateSqlWithTaskId(taskId, (param) -> generateUpdateSql(entity, true));
         return getJdbcTemplate().update(sql);
     }
 
     @Override
     public int updateBy(String taskId, T entity, JSONObject queryMap, boolean andOr) {
+        preUpdate(entity);
         String sql = doGenerateSqlWithTaskId(taskId, (param) -> generateUpdateBySql(entity, queryMap, andOr, false));
         return getJdbcTemplate().update(sql);
     }
 
     @Override
     public int updateNotNullBy(String taskId, T entity, JSONObject queryMap, boolean andOr) {
+        preUpdate(entity);
         String sql = doGenerateSqlWithTaskId(taskId, (param) -> generateUpdateBySql(entity, queryMap, andOr, true));
         return getJdbcTemplate().update(sql);
     }

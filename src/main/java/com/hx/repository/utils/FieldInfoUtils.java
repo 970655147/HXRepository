@@ -1,8 +1,14 @@
 package com.hx.repository.utils;
 
 import com.hx.log.util.Tools;
+import com.hx.repository.domain.BaseEntity;
 import com.hx.repository.model.FieldInfo;
+import org.apache.commons.lang3.StringUtils;
 
+import javax.persistence.Column;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,6 +24,9 @@ public final class FieldInfoUtils {
     private FieldInfoUtils() {
         Tools.assert0("can't instantiate !");
     }
+
+    /** BaseEntity.versionNumber */
+    public static Field BASE_ENTITY_VERSION_NUMBER_FIELD;
 
     /**
      * 根据 fieldName/columnName 进行查询
@@ -44,6 +53,83 @@ public final class FieldInfoUtils {
             }
         }
         return null;
+    }
+
+    /**
+     * 从 class 中解析 字段信息
+     *
+     * @return java.util.List<com.hx.test08.Test20CodeGenerator.FieldInfo>
+     * @author Jerry.X.He
+     * @date 2020-11-19 09:55
+     */
+    public static <T> List<FieldInfo> parseFieldInfoListFromClass(Class<T> clazz) {
+        List<FieldInfo> result = new ArrayList<>();
+        for (Field field : clazz.getDeclaredFields()) {
+            if (Modifier.isStatic(field.getModifiers())) {
+                continue;
+            }
+
+            FieldInfo fieldInfo = new FieldInfo();
+            Column columnAnno = field.getDeclaredAnnotation(Column.class);
+
+            // 从 @Column 上面获取 列明, nullable, insertable, updatable, length 等等属性
+            String columnName = Tools.camel2UnderLine(field.getName()).toUpperCase();
+            if (columnAnno != null && StringUtils.isNotBlank(columnAnno.name())) {
+                columnName = columnAnno.name();
+            }
+            boolean nullable = true, insertable = true, updatable = true;
+            int minLength = 0, maxLength = Integer.MAX_VALUE;
+            if (columnAnno != null) {
+                nullable = columnAnno.nullable();
+                insertable = columnAnno.insertable();
+                updatable = columnAnno.updatable();
+                maxLength = columnAnno.length();
+            }
+            boolean updateIncr = false;
+            int updateIncrOffset = 0;
+            if (field.equals(baseEntityVersionNumberField())) {
+                updateIncr = true;
+                updateIncrOffset = 1;
+            }
+
+
+            // apply FieldInfo 的相关属性
+            fieldInfo.setFieldName(field.getName());
+            fieldInfo.setColumnName(columnName);
+            fieldInfo.setCommentInfo(field.getName());
+            fieldInfo.setNullable(nullable);
+            fieldInfo.setInsertable(insertable);
+            fieldInfo.setUpdatable(updatable);
+            fieldInfo.setMinLength(minLength);
+            fieldInfo.setMaxLength(maxLength);
+            fieldInfo.setUpdateIncr(updateIncr);
+            fieldInfo.setUpdateIncrOffset(updateIncrOffset);
+            fieldInfo.setField(field);
+            result.add(fieldInfo);
+        }
+
+        return result;
+    }
+
+    /**
+     * 获取 BaseEntity 的 versionNumber 字段
+     *
+     * @return java.lang.reflect.Field
+     * @author Jerry.X.He
+     * @date 2021-01-24 15:39
+     */
+    public static Field baseEntityVersionNumberField() {
+        if (BASE_ENTITY_VERSION_NUMBER_FIELD != null) {
+            return BASE_ENTITY_VERSION_NUMBER_FIELD;
+        }
+
+        try {
+            BASE_ENTITY_VERSION_NUMBER_FIELD = BaseEntity.class.getDeclaredField("versionNumber");
+            return BASE_ENTITY_VERSION_NUMBER_FIELD;
+        } catch (Exception e) {
+            // ignore
+            return null;
+        }
     }
 
 

@@ -14,9 +14,17 @@ import java.util.List;
  */
 @Data
 public class ClassInfo<T> {
+
+    /** 表名 */
     private String tableName;
+
+    /** class */
     private Class<T> clazz;
+
+    /** 字段列表 */
     private List<FieldInfo> fields;
+
+    /** 基类信息 */
     private ClassInfo<? super T> superClassInfo;
 
     /**
