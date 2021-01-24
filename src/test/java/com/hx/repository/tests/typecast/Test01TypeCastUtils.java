@@ -1,7 +1,6 @@
 package com.hx.repository.tests.typecast;
 
 import com.hx.common.util.AssertUtils;
-import com.hx.log.util.Tools;
 import com.hx.repository.domain.Trade;
 import com.hx.repository.tests.base.BaseServiceTest;
 import com.hx.repository.utils.TypeCastUtils;
@@ -10,14 +9,8 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
-import javax.tools.JavaCompiler;
-import javax.tools.StandardJavaFileManager;
-import javax.tools.ToolProvider;
-import java.io.File;
 import java.util.Arrays;
 import java.util.List;
-
-import static com.hx.log.log.LogPatternUtils.formatLogInfoWithIdx;
 
 /**
  * Test01TypeCastUtils
@@ -116,57 +109,6 @@ public class Test01TypeCastUtils extends BaseServiceTest {
     }
 
     // ----------------------------------------- 辅助方法 -----------------------------------------
-
-    /**
-     * 保存给定的 所有的行到 file
-     *
-     * @param lines    lines
-     * @param filePath filePath
-     * @return void
-     * @author Jerry.X.He
-     * @date 2021-01-21 18:04
-     */
-    private void saveLines(List<String> lines, String filePath) {
-        StringBuilder sb = new StringBuilder();
-        for (String line : lines) {
-            sb.append(line).append(Tools.CRLF);
-        }
-
-        try {
-            Tools.save(sb.toString(), filePath);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * 编译已经生成的 .java 文件, 断言给定的 生成的 java 文件是否合法
-     *
-     * @param filePath filePath
-     * @return void
-     * @author Jerry.X.He
-     * @date 2021-01-22 15:59
-     */
-    private void compileGeneratedJavaThenAssert(String filePath) {
-        JavaCompiler jc = ToolProvider.getSystemJavaCompiler();
-        StandardJavaFileManager sjfm = jc.getStandardFileManager(null, null, null);
-
-        File theJavaFile = new File(filePath);
-        try {
-            Iterable fileObjects = sjfm.getJavaFileObjects(theJavaFile);
-            jc.getTask(null, sjfm, null, null, null, fileObjects).call();
-            sjfm.close();
-        } catch (Exception e) {
-            AssertUtils.assert0(false, formatLogInfoWithIdx(" compile {0} failed ", filePath));
-            return;
-        }
-
-        String fileName = theJavaFile.getName();
-        String fileNameWithoutSuffix = fileName.substring(0, fileName.lastIndexOf("."));
-        File parentFolder = theJavaFile.getParentFile();
-        File theClassFile = new File(parentFolder, fileNameWithoutSuffix + ".class");
-        AssertUtils.assert0(theClassFile.exists(), " the theClassFile does not exists ");
-    }
 
     /**
      * tradeConverterExistsMethodCode
