@@ -17,7 +17,7 @@ import java.math.BigDecimal;
 @Data
 @Entity
 @Table(name = "TRADE")
-public class Trade extends AbstractAuditable {
+public class Trade extends BaseEntity {
 
     private static final long serialVersionUID = 100L;
 

@@ -3,6 +3,10 @@ package com.hx.repository.tests.base;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.hx.repository.context.SpringContext;
+import com.hx.repository.context.task.TaskContext;
+import com.hx.repository.context.task.TaskContextThreadLocal;
+import com.hx.repository.context.user.UserContext;
+import com.hx.repository.context.user.UserContextThreadLocal;
 import com.hx.repository.model.ClassInfo;
 import com.hx.repository.model.FieldInfo;
 import com.hx.repository.utils.ClassInfoUtils;
@@ -26,8 +30,20 @@ import java.util.List;
 public class BaseServiceTest {
 
     @BeforeClass
-    public static void springContextInit() {
+    public static void beforeClass01SpringContextInit() {
         SpringContext.init();
+    }
+
+    @BeforeClass
+    public static void beforeClass02UserContextInit() {
+        UserContext context = new UserContext("0x1111", "jerry");
+        UserContextThreadLocal.set(context);
+    }
+
+    @BeforeClass
+    public static void beforeClass03TaskContextInit() {
+        TaskContext context = new TaskContext("0x0000", "main");
+        TaskContextThreadLocal.set(context);
     }
 
 //    @Test
