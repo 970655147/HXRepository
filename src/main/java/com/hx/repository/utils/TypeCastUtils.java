@@ -271,13 +271,13 @@ public final class TypeCastUtils {
     public static String generateToJsonSignature(Class clazz) {
         String className = clazz.getSimpleName();
         String methodName = generateToJsonName(className);
-        return String.format("public JSONObject %s(%s entity)", methodName, className);
+        return String.format("public static JSONObject %s(%s entity)", methodName, className);
     }
 
     public static String generateFromJsonSignature(Class clazz) {
         String className = clazz.getSimpleName();
         String methodName = generateFromJsonName(className);
-        return String.format("public %s %s(JSONObject json)", className, methodName);
+        return String.format("public static %s %s(JSONObject json)", className, methodName);
     }
 
     /**
@@ -334,7 +334,7 @@ public final class TypeCastUtils {
         String sourceTypeName = sourceClazz.getSimpleName();
         String targetTypeName = targetClazz.getSimpleName();
         String methodName = generateToTypeName(sourceClazz, targetClazz);
-        return String.format("public %s %s(%s entity)", targetTypeName, methodName, sourceTypeName);
+        return String.format("public static %s %s(%s entity)", targetTypeName, methodName, sourceTypeName);
     }
 
     /**

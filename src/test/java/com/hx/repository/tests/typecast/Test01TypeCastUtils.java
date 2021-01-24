@@ -129,22 +129,22 @@ public class Test01TypeCastUtils extends BaseServiceTest {
                       "// " + className + "\n" +
                       "public class " + className + " {\n" +
                       "\n" +
-                      "    public JSONObject castTradeToJson(Trade entity) {\n" +
+                      "    public static JSONObject castTradeToJson(Trade entity) {\n" +
                       "        JSONObject result = new JSONObject();\n" +
                       "        return result;\n" +
                       "    }\n" +
                       "\n" +
-                      "    public Trade castJsonToTrade(JSONObject json) {\n" +
+                      "    public static Trade castJsonToTrade(JSONObject json) {\n" +
                       "        Trade result = new Trade();\n" +
                       "        return result;\n" +
                       "    }\n" +
                       "\n" +
-                      "    public TradeView castTradeToTradeView(Trade entity) {\n" +
+                      "    public static TradeView castTradeToTradeView(Trade entity) {\n" +
                       "        TradeView result = new TradeView();\n" +
                       "        return result;\n" +
                       "    }\n" +
                       "\n" +
-                      "    public Trade castTradeViewToTrade(TradeView entity) {\n" +
+                      "    public static Trade castTradeViewToTrade(TradeView entity) {\n" +
                       "        Trade result = new Trade();\n" +
                       "        return result;\n" +
                       "    }\n" +
@@ -172,22 +172,22 @@ public class Test01TypeCastUtils extends BaseServiceTest {
                       "// " + className + "\n" +
                       "public class " + className + " {\n" +
                       "\n" +
-                      "    public JSONObject castTrade1ToJson(Trade entity) {\n" +
+                      "    public static JSONObject castTrade1ToJson(Trade entity) {\n" +
                       "        JSONObject result = new JSONObject();\n" +
                       "        return result;\n" +
                       "    }\n" +
                       "\n" +
-                      "    public Trade castJsonToTrade1(JSONObject json) {\n" +
+                      "    public static Trade castJsonToTrade1(JSONObject json) {\n" +
                       "        Trade result = new Trade();\n" +
                       "        return result;\n" +
                       "    }\n" +
                       "\n" +
-                      "    public TradeView castTrade1ToTradeView(Trade entity) {\n" +
+                      "    public static TradeView castTrade1ToTradeView(Trade entity) {\n" +
                       "        TradeView result = new TradeView();\n" +
                       "        return result;\n" +
                       "    }\n" +
                       "\n" +
-                      "    public Trade castTradeViewToTrade1(TradeView entity) {\n" +
+                      "    public static Trade castTradeViewToTrade1(TradeView entity) {\n" +
                       "        Trade result = new Trade();\n" +
                       "        return result;\n" +
                       "    }\n" +
