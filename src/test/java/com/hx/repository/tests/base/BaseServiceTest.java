@@ -14,6 +14,7 @@ import com.hx.repository.model.FieldInfo;
 import com.hx.repository.utils.ClassInfoUtils;
 import com.hx.repository.utils.FieldInfoUtils;
 import org.junit.BeforeClass;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -54,10 +55,10 @@ public class BaseServiceTest {
         TaskContextThreadLocal.set(context);
     }
 
-//    @Test
-//    public void test() {
-//        System.out.println("Hello Junit");
-//    }
+    @Test
+    public void test() {
+        System.out.println("Hello Junit");
+    }
 
     // ----------------------------------------- 辅助方法 -----------------------------------------
 
