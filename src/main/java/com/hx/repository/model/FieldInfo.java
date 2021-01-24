@@ -1,5 +1,6 @@
 package com.hx.repository.model;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
 import java.lang.reflect.Field;
@@ -44,7 +45,11 @@ public class FieldInfo<T> {
     /** 更新的时候 增量处理的数量 */
     private int updateIncrOffset;
 
+    /** 当前字段的默认值 */
+    private Object defaultValue;
+
     /** 字段对应的 Field */
+    @JSONField(serialize = false)
     private Field field;
 
 }

@@ -22,6 +22,11 @@ import java.util.function.Function;
  */
 public final class TypeCastUtils {
 
+    // disable constructor
+    private TypeCastUtils() {
+        Tools.assert0("can't instantiate !");
+    }
+
     /** 默认的缩进 */
     public static int IDENT = 4;
     /** 默认的缩进的数量 */

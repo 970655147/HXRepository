@@ -47,6 +47,7 @@ spark-warehouse/
 .mvn
 
 # 单元测试相关需要 ignore 的文件
+/src/test/java/com/hx/repository/tests/sqlite/ignore
 /src/test/java/com/hx/repository/tests/typecast/ignore
 /src/test/resources/trade.sqlite3
 

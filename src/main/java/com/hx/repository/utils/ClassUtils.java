@@ -3,6 +3,8 @@ package com.hx.repository.utils;
 import com.hx.log.util.Tools;
 
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -131,6 +133,82 @@ public final class ClassUtils {
      */
     public static boolean isStringClass(Class clazz) {
         return STRING_CLASSES.contains(clazz);
+    }
+
+    /**
+     * 判断 clazz 是否是 布尔
+     *
+     * @param clazz clazz
+     * @return boolean
+     * @author Jerry.X.He
+     * @date 2021-01-24 16:27
+     */
+    public static boolean isBooleanClass(Class clazz) {
+        return clazz == boolean.class || clazz == Boolean.class;
+    }
+
+    /**
+     * 判断 clazz 是否是 整形
+     *
+     * @param clazz clazz
+     * @return boolean
+     * @author Jerry.X.He
+     * @date 2021-01-24 16:27
+     */
+    public static boolean isIntegerClass(Class clazz) {
+        return clazz == byte.class || clazz == Byte.class ||
+               clazz == short.class || clazz == Short.class ||
+               clazz == char.class || clazz == Character.class ||
+               clazz == int.class || clazz == Integer.class;
+    }
+
+    /**
+     * 判断 clazz 是否是 长整形
+     *
+     * @param clazz clazz
+     * @return boolean
+     * @author Jerry.X.He
+     * @date 2021-01-24 16:27
+     */
+    public static boolean isLongClass(Class clazz) {
+        return clazz == long.class || clazz == Long.class;
+    }
+
+    /**
+     * 判断 clazz 是否是 长整形
+     *
+     * @param clazz clazz
+     * @return boolean
+     * @author Jerry.X.He
+     * @date 2021-01-24 16:29
+     */
+    public static boolean isFloatClass(Class clazz) {
+        return clazz == float.class || clazz == Float.class ||
+               clazz == double.class || clazz == Double.class;
+    }
+
+    /**
+     * 判断 clazz 是否是 BigInteger
+     *
+     * @param clazz clazz
+     * @return boolean
+     * @author Jerry.X.He
+     * @date 2021-01-24 16:29
+     */
+    public static boolean isBigIntegerClass(Class clazz) {
+        return clazz == BigInteger.class;
+    }
+
+    /**
+     * 判断 clazz 是否是 BigDecimal
+     *
+     * @param clazz clazz
+     * @return boolean
+     * @author Jerry.X.He
+     * @date 2021-01-24 16:29
+     */
+    public static boolean isBigDecimalClass(Class clazz) {
+        return clazz == BigDecimal.class;
     }
 
     /**

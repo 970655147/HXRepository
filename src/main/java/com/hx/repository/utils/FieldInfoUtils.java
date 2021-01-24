@@ -6,6 +6,7 @@ import com.hx.repository.model.FieldInfo;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.Column;
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -27,6 +28,8 @@ public final class FieldInfoUtils {
 
     /** BaseEntity.versionNumber */
     public static Field BASE_ENTITY_VERSION_NUMBER_FIELD;
+    /** 上一次创建的对象 */
+    public static WeakReference<Object> LAST_CREATED_INSTANCE_REF = new WeakReference<>(null);
 
     /**
      * 根据 fieldName/columnName 进行查询
@@ -78,7 +81,7 @@ public final class FieldInfoUtils {
                 columnName = columnAnno.name();
             }
             boolean nullable = true, insertable = true, updatable = true;
-            int minLength = 0, maxLength = Integer.MAX_VALUE;
+            int minLength = 0, maxLength = 1024;
             if (columnAnno != null) {
                 nullable = columnAnno.nullable();
                 insertable = columnAnno.insertable();
@@ -92,6 +95,8 @@ public final class FieldInfoUtils {
                 updateIncrOffset = 1;
             }
 
+            /** 获取当前字段的默认值 */
+            Object defaultValue = defaultValue(clazz, field);
 
             // apply FieldInfo 的相关属性
             fieldInfo.setFieldName(field.getName());
@@ -104,6 +109,7 @@ public final class FieldInfoUtils {
             fieldInfo.setMaxLength(maxLength);
             fieldInfo.setUpdateIncr(updateIncr);
             fieldInfo.setUpdateIncrOffset(updateIncrOffset);
+            fieldInfo.setDefaultValue(defaultValue);
             fieldInfo.setField(field);
             result.add(fieldInfo);
         }
@@ -126,6 +132,32 @@ public final class FieldInfoUtils {
         try {
             BASE_ENTITY_VERSION_NUMBER_FIELD = BaseEntity.class.getDeclaredField("versionNumber");
             return BASE_ENTITY_VERSION_NUMBER_FIELD;
+        } catch (Exception e) {
+            // ignore
+            return null;
+        }
+    }
+
+    /**
+     * 获取给定的 clazz 的给定的 field 的默认值
+     *
+     * @param clazz clazz
+     * @param field field
+     * @return java.lang.Object
+     * @author Jerry.X.He
+     * @date 2021-01-24 16:20
+     */
+    public static <T> Object defaultValue(Class<T> clazz, Field field) {
+        try {
+            Object lastCreatedInstance = LAST_CREATED_INSTANCE_REF.get();
+            if (lastCreatedInstance == null || lastCreatedInstance.getClass() != clazz) {
+                lastCreatedInstance = clazz.newInstance();
+                LAST_CREATED_INSTANCE_REF = new WeakReference<>(lastCreatedInstance);
+            }
+
+            Object entity = lastCreatedInstance;
+            field.setAccessible(true);
+            return field.get(entity);
         } catch (Exception e) {
             // ignore
             return null;
