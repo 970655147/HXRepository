@@ -1,14 +1,18 @@
 package com.hx.repository.utils;
 
+import com.hx.common.util.AssertUtils;
 import com.hx.log.util.Tools;
 
+import javax.tools.JavaCompiler;
+import javax.tools.StandardJavaFileManager;
+import javax.tools.ToolProvider;
+import java.io.File;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
+
+import static com.hx.log.log.LogPatternUtils.formatLogInfoWithIdx;
 
 /**
  * ClassInfoUtils
@@ -237,6 +241,101 @@ public final class ClassUtils {
             e.printStackTrace();
             return Collections.emptyList();
         }
+    }
+
+    /**
+     * 编译已经生成的 .java 文件
+     *
+     * @param filePath filePath
+     * @return void
+     * @author Jerry.X.He
+     * @date 2021-01-28 10:41
+     */
+    public static Class compileTheJava(String filePath, String classpath) {
+        JavaCompiler jc = ToolProvider.getSystemJavaCompiler();
+        StandardJavaFileManager sjfm = jc.getStandardFileManager(null, null, null);
+
+        File theJavaFile = new File(filePath);
+        try {
+            ArrayList<String> options = new ArrayList<>();
+            options.add("-classpath");
+            options.add(classpath);
+
+            Iterable fileObjects = sjfm.getJavaFileObjects(theJavaFile);
+            jc.getTask(null, sjfm, null, options, null, fileObjects).call();
+            sjfm.close();
+        } catch (Exception e) {
+            AssertUtils.assert0(false, formatLogInfoWithIdx(" compile {0} failed ", filePath));
+            return null;
+        }
+
+        String fileName = theJavaFile.getName();
+        String fileNameWithoutSuffix = fileName.substring(0, fileName.lastIndexOf("."));
+        File parentFolder = theJavaFile.getParentFile();
+        String clazzFileName = fileNameWithoutSuffix + Tools.CLASS;
+        File theClassFile = new File(parentFolder, fileNameWithoutSuffix + Tools.CLASS);
+
+        String targetClassPath = getTargetClassPath();
+        String classPackage = determinePackageFromFile(filePath);
+        File copiedClazzParentDir = new File(targetClassPath, classPackage.replaceAll("\\.", "/"));
+        File copiedClazzFile = new File(copiedClazzParentDir, clazzFileName);
+
+        // 将编译好的 class 文件复制到 当前 classpath
+        copiedClazzParentDir.mkdirs();
+        if (copiedClazzFile.exists()) {
+            copiedClazzFile.delete();
+        }
+        theClassFile.renameTo(copiedClazzFile);
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+
+        try {
+            Class clazz = classLoader.loadClass(classPackage + "." + fileNameWithoutSuffix);
+            return clazz;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * 获取当前项目的 target/classes
+     *
+     * @return java.lang.String
+     * @author Jerry.X.He
+     * @date 2021-01-28 11:44
+     */
+    public static String getTargetClassPath() {
+        String classpath = System.getProperty("java.class.path");
+        // ":" need compatiable with other platform
+        String[] splited = classpath.split(":");
+        for (String cp : splited) {
+            if (cp.contains("/target/classes")) {
+                return cp;
+            }
+        }
+        return System.getProperty("user.dir", "/") + "/target/classes";
+    }
+
+    /**
+     * 根据文件获取包名
+     *
+     * @param filePath filePath
+     * @return java.lang.String
+     * @author Jerry.X.He
+     * @date 2021-01-28 11:52
+     */
+    public static String determinePackageFromFile(String filePath) {
+        List<String> topPackages = Arrays.asList("/com/", "/org/", "/cn/");
+        for (String topPackage : topPackages) {
+            if (filePath.contains(topPackage)) {
+                int idxOfTopPackage = filePath.indexOf(topPackage);
+                String clazzRelativePath = filePath.substring(idxOfTopPackage + 1);
+                return clazzRelativePath
+                        .substring(0, clazzRelativePath.lastIndexOf("/"))
+                        .replaceAll("/", ".");
+            }
+        }
+        return null;
     }
 
 }

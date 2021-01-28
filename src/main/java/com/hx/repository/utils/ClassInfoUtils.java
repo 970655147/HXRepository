@@ -36,6 +36,10 @@ public final class ClassInfoUtils {
      * @date 2021-01-17 10:47
      */
     public static <T> ClassInfo getClassInfo(Class<T> clazz) {
+        if (clazz == null) {
+            return null;
+        }
+
         ClassInfo result = GLOBAL.get(clazz);
         if (result == null) {
             synchronized (GLOBAL) {
@@ -65,13 +69,26 @@ public final class ClassInfoUtils {
     }
 
     /**
+     * 从给定的代码文件中解析出 ClassInfo
+     *
+     * @param filePath filePath
+     * @return com.hx.repository.model.ClassInfo
+     * @author Jerry.X.He
+     * @date 2021-01-28 10:19
+     */
+    public static ClassInfo parseClassInfoFromSourceFile(String filePath, String classpath) {
+        Class clazz = ClassUtils.compileTheJava(filePath, classpath);
+        return ClassInfoUtils.getClassInfo(clazz);
+    }
+
+    /**
      * 获取当前 Repository 对应的实体解析之后的 ClassInfo
      *
-     * @return dcamsclient.repository.base.ClassInfo<T>
+     * @return dcamsclient.repository.base.ClassInfo
      * @author Jerry.X.He
      * @date 2020-11-19 09:55
      */
-    private static <T> ClassInfo parseClassInfoFromClass(Class<T> clazz) {
+    public static <T> ClassInfo parseClassInfoFromClass(Class<T> clazz) {
         if (clazz == Object.class) {
             return null;
         }
