@@ -2,6 +2,7 @@ package com.hx.repository.utils;
 
 import com.hx.common.util.AssertUtils;
 import com.hx.log.util.Tools;
+import com.hx.repository.classloader.EagerClassLoader;
 
 import javax.tools.JavaCompiler;
 import javax.tools.StandardJavaFileManager;
@@ -216,6 +217,36 @@ public final class ClassUtils {
     }
 
     /**
+     * 获取给定的 classloader 已经加载的类 的所有的类
+     *
+     * @param classLoader classLoader
+     * @return java.util.List<java.lang.Class>
+     * @author Jerry.X.He
+     * @date 2021-01-20 21:06
+     */
+    public static List<Class> getAllClasses(ClassLoader classLoader) {
+        try {
+            Field field = ClassLoader.class.getDeclaredField("classes");
+            field.setAccessible(true);
+            Vector<Class> classes = (Vector<Class>) field.get(classLoader);
+
+            List<Class> result = new ArrayList<>();
+            for (Class clazz : classes) {
+                result.add(clazz);
+            }
+
+            // 递归 父classloader
+            if (classLoader.getParent() != null) {
+                result.addAll(getAllClasses(classLoader.getParent()));
+            }
+            return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
+    }
+
+    /**
      * 获取给定的 classloader 已经加载的类 的所有的 baseClass 的子类
      *
      * @param classLoader classLoader
@@ -236,11 +267,56 @@ public final class ClassUtils {
                     result.add(clazz);
                 }
             }
+
+            // 递归 父classloader
+            if (classLoader.getParent() != null) {
+                result.addAll(getSubClasses(classLoader.getParent(), baseClazz));
+            }
             return result;
         } catch (Exception e) {
             e.printStackTrace();
             return Collections.emptyList();
         }
+    }
+
+    /**
+     * 获取给定的 类路径 或者 jar 的所有的 类
+     *
+     * @param pathOrJar pathOrJar
+     * @return java.util.List<java.lang.Class>
+     * @author Jerry.X.He
+     * @date 2021-02-01 15:54
+     */
+    public static List<Class> getAllClasses(String pathOrJar) {
+        ClassLoader parent = Thread.currentThread().getContextClassLoader();
+        EagerClassLoader classLoader = new EagerClassLoader(pathOrJar, parent);
+        return getAllClasses(classLoader);
+    }
+
+    public static List<Class> getSubClasses(String pathOrJar, Class baseClazz) {
+        ClassLoader parent = Thread.currentThread().getContextClassLoader();
+        EagerClassLoader classLoader = new EagerClassLoader(pathOrJar, parent);
+        return getSubClasses(classLoader, baseClazz);
+    }
+
+    /**
+     * 获取给定的多个 类路径 或者 jar 的所有的 类
+     *
+     * @param pathOrJar pathOrJar
+     * @return java.util.List<java.lang.Class>
+     * @author Jerry.X.He
+     * @date 2021-02-01 15:54
+     */
+    public static List<Class> getAllClasses(String[] pathOrJar) {
+        ClassLoader parent = Thread.currentThread().getContextClassLoader();
+        EagerClassLoader classLoader = new EagerClassLoader(pathOrJar, parent);
+        return getAllClasses(classLoader);
+    }
+
+    public static List<Class> getSubClasses(String[] pathOrJar, Class baseClazz) {
+        ClassLoader parent = Thread.currentThread().getContextClassLoader();
+        EagerClassLoader classLoader = new EagerClassLoader(pathOrJar, parent);
+        return getSubClasses(classLoader, baseClazz);
     }
 
     /**
