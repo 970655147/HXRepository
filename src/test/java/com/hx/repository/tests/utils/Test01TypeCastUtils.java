@@ -1,4 +1,4 @@
-package com.hx.repository.tests.typecast;
+package com.hx.repository.tests.utils;
 
 import com.hx.common.util.AssertUtils;
 import com.hx.repository.domain.Trade;
@@ -25,7 +25,7 @@ public class Test01TypeCastUtils extends BaseServiceTest {
     /** BASE_PATH */
     private static String BASE_PATH = System.getProperty("user.dir");
     /** BASE_IGNORE_PATH */
-    private static String BASE_IGNORE_PATH = BASE_PATH + "/src/test/java/com/hx/repository/tests/typecast/ignore";
+    private static String BASE_IGNORE_PATH = BASE_PATH + "/src/test/java/com/hx/repository/tests/utils/ignore";
 
     @Test
     public void test01TradeToJsonCastWithFakePath() {
@@ -118,7 +118,7 @@ public class Test01TypeCastUtils extends BaseServiceTest {
      * @date 2021-01-21 18:14
      */
     private List<String> tradeConverterExistsMethodCode(String className) {
-        String code = "package com.hx.repository.tests.typecast.ignore;\n" +
+        String code = "package com.hx.repository.tests.utils.ignore;\n" +
                       "\n" +
                       "import com.alibaba.fastjson.JSONObject;\n" +
                       "import com.hx.repository.domain.Trade;\n" +
@@ -161,7 +161,7 @@ public class Test01TypeCastUtils extends BaseServiceTest {
      * @date 2021-01-21 18:14
      */
     private List<String> tradeConverterNotExistsMethodCode(String className) {
-        String code = "package com.hx.repository.tests.typecast.ignore;\n" +
+        String code = "package com.hx.repository.tests.utils.ignore;\n" +
                       "\n" +
                       "import com.alibaba.fastjson.JSONObject;\n" +
                       "import com.hx.repository.domain.Trade;\n" +

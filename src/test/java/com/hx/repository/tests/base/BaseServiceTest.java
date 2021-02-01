@@ -22,7 +22,11 @@ import javax.tools.JavaCompiler;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static com.hx.log.log.LogPatternUtils.formatLogInfoWithIdx;
 
@@ -145,6 +149,81 @@ public class BaseServiceTest {
         File parentFolder = theJavaFile.getParentFile();
         File theClassFile = new File(parentFolder, fileNameWithoutSuffix + ".class");
         AssertUtils.assert0(theClassFile.exists(), " the theClassFile does not exists ");
+    }
+
+    /**
+     * 判断 left & right 元素相同
+     *
+     * @param left    left
+     * @param right   right
+     * @param message message
+     * @return void
+     * @author Jerry.X.He
+     * @date 2021-02-01 16:35
+     */
+    public void listEqualsThenAssert(List<String> left, List<String> right, String message) {
+        if (left == null && right == null) {
+            return;
+        }
+        if (left == null || right == null) {
+            String leftString = JSON.toJSONString(left);
+            String rightString = JSON.toJSONString(right);
+            AssertUtils.assert0(formatLogInfoWithIdx(" msg : {0}, left : {1}, right : {2} ",
+                                                     message, leftString, rightString));
+        }
+
+        List<String> onlyLeft = new ArrayList<>(left);
+        onlyLeft.removeAll(right);
+        List<String> onlyRight = new ArrayList<>(right);
+        onlyRight.removeAll(left);
+
+        if (onlyLeft.isEmpty() && onlyRight.isEmpty()) {
+            return;
+        }
+        String onlyLeftString = JSON.toJSONString(onlyLeft);
+        String onlyRightString = JSON.toJSONString(onlyRight);
+        AssertUtils.assert0(formatLogInfoWithIdx(" msg : {0}, onlyLeft : {1}, onlyRight : {2} ",
+                                                 message, onlyLeftString, onlyRightString));
+    }
+
+    /**
+     * 打印出给定的 列表的期望输出
+     *
+     * @param list             list
+     * @param printFunc        printFunc
+     * @param containerVarName containerVarName
+     * @return void
+     * @author Jerry.X.He
+     * @date 2021-02-01 16:58
+     */
+    public <T> void printListExpect(List<T> list, Function<T, String> printFunc, String containerVarName) {
+        List<String> resultClassList = list.stream().map(printFunc).collect(Collectors.toList());
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format("List<String> %s = new ArrayList<>();\n", containerVarName));
+        for (String ele : resultClassList) {
+            sb.append(String.format("%s.add(\"%s\");\n", containerVarName, ele));
+        }
+        System.out.println(sb.toString());
+    }
+
+    /**
+     * 打印出给定的 集合的期望输出
+     *
+     * @param list             list
+     * @param printFunc        printFunc
+     * @param containerVarName containerVarName
+     * @return void
+     * @author Jerry.X.He
+     * @date 2021-02-01 16:58
+     */
+    public <T> void printSetExpect(Set<T> list, Function<T, String> printFunc, String containerVarName) {
+        List<String> resultClassList = list.stream().map(printFunc).collect(Collectors.toList());
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format("Set<String> %s = new LinkedHashSet<>();\n", containerVarName));
+        for (String ele : resultClassList) {
+            sb.append(String.format("%s.add(\"%s\");\n", containerVarName, ele));
+        }
+        System.out.println(sb.toString());
     }
 
 
