@@ -457,12 +457,12 @@ public final class TypeCastUtils {
         List<String> candidates = new ArrayList<>();
         boolean isPrimitiveOrWrapped = ClassUtils.isPrimitiveOrWrapperClass(fieldType);
         if (isPrimitiveOrWrapped) {
-            boolean isWrapped = ClassUtils.isPrimitiveWrapperClass(fieldType);
-            Class primitiveClazz = fieldType;
-            if (isWrapped) {
-                primitiveClazz = ClassUtils.wrapperClass2Primitive(fieldType);
+            boolean isPrimitive = ClassUtils.isPrimitiveClass(fieldType);
+            Class wrapperClazz = fieldType;
+            if (isPrimitive) {
+                wrapperClazz = ClassUtils.primitiveClass2Wrapper(fieldType);
             }
-            candidates.add("get" + Tools.upperCaseFirstChar(primitiveClazz.getSimpleName()));
+            candidates.add("get" + Tools.upperCaseFirstChar(wrapperClazz.getSimpleName()));
         }
         if (ClassUtils.isStringClass(fieldType)) {
             candidates.add("getString");
