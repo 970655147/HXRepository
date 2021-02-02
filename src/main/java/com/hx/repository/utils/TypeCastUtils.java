@@ -6,6 +6,7 @@ import com.hx.log.util.Constants;
 import com.hx.log.util.Tools;
 import com.hx.repository.model.ClassInfo;
 import com.hx.repository.model.FieldInfo;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 
 import java.lang.reflect.Method;
@@ -646,6 +647,7 @@ public final class TypeCastUtils {
                 return i;
             }
         }
+
         return -1;
     }
 
@@ -688,6 +690,39 @@ public final class TypeCastUtils {
 
     public static int locateMethodEnd(List<String> lines, int start) {
         return locateMethodEnd(lines, start, "{", "}");
+    }
+
+    /**
+     * locateJavaDocStart
+     *
+     * @param lines       lines
+     * @param methodStart methodStart
+     * @param locator     locator
+     * @return int
+     * @author Jerry.X.He
+     * @date 2021-02-02 11:51
+     */
+    public static int locateJavaDocStart(List<String> lines, int methodStart, String locator) {
+        if (methodStart < 0) {
+            return -1;
+        }
+
+        for (int i = methodStart; i >= 0; i--) {
+            String line = lines.get(i);
+            // 如果是空行, 定位下一行
+            if (StringUtils.isBlank(line)) {
+                return i + 1;
+            }
+            if (line.contains(locator)) {
+                return i;
+            }
+        }
+
+        return methodStart;
+    }
+
+    public static int locateJavaDocStart(List<String> lines, int methodStart) {
+        return locateJavaDocStart(lines, methodStart, "/**");
     }
 
     /**
@@ -741,9 +776,10 @@ public final class TypeCastUtils {
             Function<Class, String> methodGeneratorFunc) {
         String methodLocator = methodLocatorFunc.apply(clazz);
         int methodStart = locateMethodStart(lines, methodLocator);
+        int javaDocStart = locateJavaDocStart(lines, methodStart);
         int methodEnd = locateMethodEnd(lines, methodStart);
         String methodCode = methodGeneratorFunc.apply(clazz);
-        saveMethodToLines(lines, methodCode, methodStart, methodEnd);
+        saveMethodToLines(lines, methodCode, javaDocStart, methodEnd);
     }
 
     /**
@@ -766,9 +802,10 @@ public final class TypeCastUtils {
             BiFunction<Class, Class, String> methodGeneratorFunc) {
         String methodLocator = methodLocatorFunc.apply(sourceClazz, targetClazz);
         int methodStart = locateMethodStart(lines, methodLocator);
+        int javaDocStart = locateJavaDocStart(lines, methodStart);
         int methodEnd = locateMethodEnd(lines, methodStart);
         String methodCode = methodGeneratorFunc.apply(sourceClazz, targetClazz);
-        saveMethodToLines(lines, methodCode, methodStart, methodEnd);
+        saveMethodToLines(lines, methodCode, javaDocStart, methodEnd);
     }
 
     /**

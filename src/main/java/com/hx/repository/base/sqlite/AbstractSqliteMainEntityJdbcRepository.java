@@ -1,11 +1,11 @@
 package com.hx.repository.base.sqlite;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.hx.repository.base.interf.MainEntityJdbcRepository;
 import com.hx.repository.model.ClassInfo;
 import com.hx.repository.model.Page;
 import com.hx.repository.utils.QueryMapUtils;
+import com.hx.repository.utils.TypeCastUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
@@ -45,7 +45,7 @@ public abstract class AbstractSqliteMainEntityJdbcRepository<T> extends Abstract
             return null;
         }
 
-        JSONObject json = (JSONObject) JSON.toJSON(list.get(0));
+        JSONObject json = TypeCastUtils.castMap2JsonWithCamel(list.get(0));
         return fromJson(json);
     }
 
