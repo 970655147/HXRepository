@@ -58,7 +58,7 @@ public final class SqlConstants {
     /** 列名 : 默认的 DELETED */
     public static final Boolean COLUMN_DEFAULT_DELETED = Boolean.FALSE;
     /** 列名 : 默认的 SOURCE */
-    public static final Integer COLUMN_DEFAULT_VERSION = 1;
+    public static final Long COLUMN_DEFAULT_VERSION = 1L;
     // disable constructor
     private SqlConstants() {
         Tools.assert0("can't instantiate !");

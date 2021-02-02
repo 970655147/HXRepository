@@ -22,4 +22,15 @@ public class BasePageSearchRequest extends BaseSearchRequest {
     /** 排序 */
     private List<String> orderBys;
 
+    /**
+     * BasePageSearchRequest
+     *
+     * @author Jerry.X.He
+     * @date 2021-02-02 10:50
+     */
+    public BasePageSearchRequest() {
+        this.pageNo = 1;
+        this.pageSize = 10;
+    }
+
 }

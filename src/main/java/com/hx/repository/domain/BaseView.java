@@ -2,6 +2,7 @@ package com.hx.repository.domain;
 
 import lombok.Data;
 
+import javax.persistence.Id;
 import java.io.Serializable;
 
 /**
@@ -13,5 +14,8 @@ import java.io.Serializable;
  */
 @Data
 public class BaseView implements Serializable {
+
+    @Id
+    private String id;
 
 }

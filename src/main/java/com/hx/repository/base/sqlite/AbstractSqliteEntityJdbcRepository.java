@@ -1,6 +1,5 @@
 package com.hx.repository.base.sqlite;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.hx.repository.base.interf.AbstractEntityJdbcRepository;
 import com.hx.repository.consts.FieldOperator;
@@ -12,6 +11,7 @@ import com.hx.repository.model.FieldInfo;
 import com.hx.repository.utils.FieldInfoUtils;
 import com.hx.repository.utils.FieldOperatorUtils;
 import com.hx.repository.utils.QueryMapUtils;
+import com.hx.repository.utils.TypeCastUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
@@ -55,8 +55,8 @@ public abstract class AbstractSqliteEntityJdbcRepository<T> extends AbstractEnti
         }
 
         List<T> result = new ArrayList<>();
-        for (Map<String, Object> json : list) {
-            result.add(fromJson((JSONObject) JSON.toJSON(json)));
+        for (Map<String, Object> map : list) {
+            result.add(fromJson(TypeCastUtils.castMap2JsonWithCamel(map)));
         }
         return result;
     }
@@ -419,9 +419,13 @@ public abstract class AbstractSqliteEntityJdbcRepository<T> extends AbstractEnti
             if (fieldInfo == null) {
                 continue;
             }
+            Object value = queryMap.get(key);
+            // null value, skip
+            if (value == null) {
+                continue;
+            }
 
             FieldOperator queryOperator = QueryMapUtils.parseQueryOperator(key);
-            Object value = queryMap.get(key);
             result.add(new FieldCondition(fieldInfo.getColumnName(), queryOperator, value, fieldInfo));
         }
         return result;

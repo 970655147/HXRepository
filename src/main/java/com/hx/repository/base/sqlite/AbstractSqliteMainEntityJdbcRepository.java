@@ -60,6 +60,9 @@ public abstract class AbstractSqliteMainEntityJdbcRepository<T> extends Abstract
         int pageNo = QueryMapUtils.parsePageNo(queryMap);
         int pageSize = QueryMapUtils.parsePageSize(queryMap);
         int totalRecord = countBy(queryMap, andOr);
+        if (totalRecord == 0) {
+            return Page.empty(pageNo, pageSize);
+        }
 
         String sql = generateListBySql(queryMap, andOr, pageNo, pageSize);
         List<T> list = allBy0(sql);

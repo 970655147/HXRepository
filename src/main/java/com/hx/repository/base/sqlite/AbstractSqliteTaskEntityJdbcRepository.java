@@ -64,6 +64,9 @@ public abstract class AbstractSqliteTaskEntityJdbcRepository<T> extends Abstract
         int pageNo = QueryMapUtils.parsePageNo(queryMap);
         int pageSize = QueryMapUtils.parsePageSize(queryMap);
         int totalRecord = countBy(taskId, queryMap, andOr);
+        if (totalRecord == 0) {
+            return Page.empty(pageNo, pageSize);
+        }
 
         String sql = doGenerateSqlWithTaskId(taskId, (param) -> generateListBySql(queryMap, andOr, pageNo, pageSize));
         List<T> list = allBy0(sql);

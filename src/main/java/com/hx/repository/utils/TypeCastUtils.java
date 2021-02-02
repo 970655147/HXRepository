@@ -97,6 +97,72 @@ public final class TypeCastUtils {
         }
     }
 
+    /**
+     * 将给定的 map 转换为 json
+     *
+     * @param map map
+     * @return com.alibaba.fastjson.JSONObject
+     * @author Jerry.X.He
+     * @date 2021-02-02 11:08
+     */
+    public static JSONObject castMap2Json(Map<String, Object> map) {
+        JSONObject result = new JSONObject();
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            result.put(entry.getKey(), entry.getValue());
+        }
+        return result;
+    }
+
+    /**
+     * 将给定的 map 转换为 json
+     *
+     * @param map map
+     * @return com.alibaba.fastjson.JSONObject
+     * @author Jerry.X.He
+     * @date 2021-02-02 11:08
+     */
+    public static JSONObject castMap2JsonWithCamel(Map<String, Object> map) {
+        JSONObject result = new JSONObject();
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            result.put(entry.getKey(), entry.getValue());
+            result.put(Tools.underLine2Camel(entry.getKey().toLowerCase()), entry.getValue());
+        }
+        return result;
+    }
+
+    /**
+     * 将给定的 json 转换为 map
+     *
+     * @param json json
+     * @return com.alibaba.fastjson.JSONObject
+     * @author Jerry.X.He
+     * @date 2021-02-02 11:08
+     */
+    public static Map<String, Object> castJson2Map(JSONObject json) {
+        Map<String, Object> result = new HashMap<>();
+        for (String key : json.keySet()) {
+            result.put(key, json.get(key));
+        }
+        return result;
+    }
+
+    /**
+     * 将给定的 json 转换为 map
+     *
+     * @param json json
+     * @return com.alibaba.fastjson.JSONObject
+     * @author Jerry.X.He
+     * @date 2021-02-02 11:08
+     */
+    public static Map<String, Object> castJson2MapWithCamel(JSONObject json) {
+        Map<String, Object> result = new HashMap<>();
+        for (String key : json.keySet()) {
+            result.put(key, json.get(key));
+            result.put(Tools.underLine2Camel(key.toLowerCase()), json.get(key));
+        }
+        return result;
+    }
+
     // ----------------------------------------- toJson/fromJson/toType 方法 -----------------------------------------
 
     /**

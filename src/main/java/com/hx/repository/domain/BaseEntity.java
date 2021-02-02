@@ -39,7 +39,7 @@ public class BaseEntity {
 
     @Basic
     @Column(name = COLUMN_CREATED_USER_ID, updatable = false)
-    private String createUserId;
+    private String createdUserId;
 
     @Basic
     @Column(name = COLUMN_CREATED_AT, updatable = false)
@@ -47,7 +47,7 @@ public class BaseEntity {
 
     @Basic
     @Column(name = COLUMN_UPDATED_USER_ID)
-    private String updateUserId;
+    private String updatedUserId;
 
     @Basic
     @Column(name = COLUMN_UPDATED_AT)
@@ -55,7 +55,7 @@ public class BaseEntity {
 
     @Version
     @Column(name = COLUMN_VERSION)
-    private long version;
+    private Long version;
 
     /**
      * default constructor
@@ -78,18 +78,17 @@ public class BaseEntity {
             id = UUID.randomUUID().toString();
         }
 
-        createUserId = UserContextThreadLocal.newIfNecessary().getUserId();
+        createdUserId = UserContextThreadLocal.newIfNecessary().getUserId();
         createdAt = System.currentTimeMillis();
 
-        updateUserId = createUserId;
+        updatedUserId = createdUserId;
         updatedAt = createdAt;
-
-        version = 1;
+        version = COLUMN_DEFAULT_VERSION;
     }
 
     @PreUpdate
     public void preUpdate() {
-        updateUserId = UserContextThreadLocal.newIfNecessary().getUserId();
+        updatedUserId = UserContextThreadLocal.newIfNecessary().getUserId();
         updatedAt = System.currentTimeMillis();
     }
 
