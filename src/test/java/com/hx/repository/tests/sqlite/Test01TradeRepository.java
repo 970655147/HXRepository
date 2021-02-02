@@ -501,7 +501,7 @@ public class Test01TradeRepository extends BaseServiceTest {
         JSONObject queryMap = new JSONObject();
         queryMap.put(WebContextConstants.PAGE_NO, pageNo);
         queryMap.put(WebContextConstants.PAGE_SIZE, pageSize);
-        queryMap.put("sourceCardNumberLike", String.format("%%%s%%", targetTrade.getSourceCardNumber()));
+        queryMap.put("sourceCardNumberLike", String.format("%s", targetTrade.getSourceCardNumber()));
         Page<Trade> tradeListInDb = tradeRepository.listBy(queryMap, true);
         for (Trade trade : tradeListInDb.getList()) {
             Trade tradeInDb = lookUp(tradeList, trade.getId());
@@ -541,7 +541,7 @@ public class Test01TradeRepository extends BaseServiceTest {
         JSONObject queryMap = new JSONObject();
         queryMap.put(WebContextConstants.PAGE_NO, pageNo);
         queryMap.put(WebContextConstants.PAGE_SIZE, pageSize);
-        queryMap.put("sourceCardNumberNotLike", String.format("%%%s%%", targetTrade.getSourceCardNumber()));
+        queryMap.put("sourceCardNumberNotLike", String.format("%s", targetTrade.getSourceCardNumber()));
         Page<Trade> tradeListInDb = tradeRepository.listBy(queryMap, true);
         for (Trade trade : tradeListInDb.getList()) {
             Trade tradeInDb = lookUp(tradeList, trade.getId());

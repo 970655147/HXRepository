@@ -181,7 +181,7 @@ public class Test02TaskTradeRepository extends BaseServiceTest {
         int updated = taskTradeRepository.addAll(TEST_TASK_ID, tradeList);
         Log.info(formatLogInfoWithIdx(" 新增了 {0} 条交易信息 ", updated));
         int totalRecord = tradeList.size();
-        int totalPage = (((totalRecord - 1) / pageSize) + 1);
+        int totalPage = Page.calcTotalPage(totalRecord, pageSize);
         int expectedListSize = pageSize < totalRecord ? pageSize : totalRecord;
 
         JSONObject queryMap = new JSONObject();
@@ -220,7 +220,7 @@ public class Test02TaskTradeRepository extends BaseServiceTest {
                 .stream()
                 .filter(row -> row.getTradeAmount().compareTo(targetTrade.getTradeAmount()) == 0)
                 .count();
-        int totalPage = (((totalRecord - 1) / pageSize) + 1);
+        int totalPage = Page.calcTotalPage(totalRecord, pageSize);
         int expectedListSize = pageSize < totalRecord ? pageSize : totalRecord;
 
         JSONObject queryMap = new JSONObject();
@@ -260,7 +260,7 @@ public class Test02TaskTradeRepository extends BaseServiceTest {
                 .stream()
                 .filter(row -> row.getTradeAmount().compareTo(targetTrade.getTradeAmount()) == 0)
                 .count();
-        int totalPage = (((totalRecord - 1) / pageSize) + 1);
+        int totalPage = Page.calcTotalPage(totalRecord, pageSize);
         int expectedListSize = pageSize < totalRecord ? pageSize : totalRecord;
 
         JSONObject queryMap = new JSONObject();
@@ -300,7 +300,7 @@ public class Test02TaskTradeRepository extends BaseServiceTest {
                 .stream()
                 .filter(row -> (row.getTradeAmount().compareTo(targetTrade.getTradeAmount())) != 0)
                 .count();
-        int totalPage = (((totalRecord - 1) / pageSize) + 1);
+        int totalPage = Page.calcTotalPage(totalRecord, pageSize);
         int expectedListSize = pageSize < totalRecord ? pageSize : totalRecord;
 
         JSONObject queryMap = new JSONObject();
@@ -340,7 +340,7 @@ public class Test02TaskTradeRepository extends BaseServiceTest {
                 .stream()
                 .filter(row -> row.getTradeAmount().compareTo(targetTrade.getTradeAmount()) > 0)
                 .count();
-        int totalPage = (((totalRecord - 1) / pageSize) + 1);
+        int totalPage = Page.calcTotalPage(totalRecord, pageSize);
         int expectedListSize = pageSize < totalRecord ? pageSize : totalRecord;
 
         JSONObject queryMap = new JSONObject();
@@ -383,7 +383,7 @@ public class Test02TaskTradeRepository extends BaseServiceTest {
                 .stream()
                 .filter(row -> row.getTradeAmount().compareTo(targetTrade.getTradeAmount()) >= 0)
                 .count();
-        int totalPage = (((totalRecord - 1) / pageSize) + 1);
+        int totalPage = Page.calcTotalPage(totalRecord, pageSize);
         int expectedListSize = pageSize < totalRecord ? pageSize : totalRecord;
 
         JSONObject queryMap = new JSONObject();
@@ -423,7 +423,7 @@ public class Test02TaskTradeRepository extends BaseServiceTest {
                 .stream()
                 .filter(row -> row.getTradeAmount().compareTo(targetTrade.getTradeAmount()) < 0)
                 .count();
-        int totalPage = (((totalRecord - 1) / pageSize) + 1);
+        int totalPage = Page.calcTotalPage(totalRecord, pageSize);
         int expectedListSize = pageSize < totalRecord ? pageSize : totalRecord;
 
         JSONObject queryMap = new JSONObject();
@@ -463,7 +463,7 @@ public class Test02TaskTradeRepository extends BaseServiceTest {
                 .stream()
                 .filter(row -> row.getTradeAmount().compareTo(targetTrade.getTradeAmount()) <= 0)
                 .count();
-        int totalPage = (((totalRecord - 1) / pageSize) + 1);
+        int totalPage = Page.calcTotalPage(totalRecord, pageSize);
         int expectedListSize = pageSize < totalRecord ? pageSize : totalRecord;
 
         JSONObject queryMap = new JSONObject();
@@ -503,7 +503,7 @@ public class Test02TaskTradeRepository extends BaseServiceTest {
                 .stream()
                 .filter(row -> row.getSourceCardNumber().contains(targetTrade.getSourceCardNumber()))
                 .count();
-        int totalPage = (((totalRecord - 1) / pageSize) + 1);
+        int totalPage = Page.calcTotalPage(totalRecord, pageSize);
         int expectedListSize = pageSize < totalRecord ? pageSize : totalRecord;
 
         JSONObject queryMap = new JSONObject();
@@ -543,7 +543,7 @@ public class Test02TaskTradeRepository extends BaseServiceTest {
                 .stream()
                 .filter(row -> (!row.getSourceCardNumber().contains(targetTrade.getSourceCardNumber())))
                 .count();
-        int totalPage = (((totalRecord - 1) / pageSize) + 1);
+        int totalPage = Page.calcTotalPage(totalRecord, pageSize);
         int expectedListSize = pageSize < totalRecord ? pageSize : totalRecord;
 
         JSONObject queryMap = new JSONObject();
@@ -583,7 +583,7 @@ public class Test02TaskTradeRepository extends BaseServiceTest {
                 .stream()
                 .filter(row -> (row.getSourceCardNumber().equals(targetTrade.getSourceCardNumber())))
                 .count();
-        int totalPage = (((totalRecord - 1) / pageSize) + 1);
+        int totalPage = Page.calcTotalPage(totalRecord, pageSize);
         int expectedListSize = pageSize < totalRecord ? pageSize : totalRecord;
 
         JSONObject queryMap = new JSONObject();
@@ -623,7 +623,7 @@ public class Test02TaskTradeRepository extends BaseServiceTest {
                 .stream()
                 .filter(row -> (!row.getSourceCardNumber().equals(targetTrade.getSourceCardNumber())))
                 .count();
-        int totalPage = (((totalRecord - 1) / pageSize) + 1);
+        int totalPage = Page.calcTotalPage(totalRecord, pageSize);
         int expectedListSize = pageSize < totalRecord ? pageSize : totalRecord;
 
         JSONObject queryMap = new JSONObject();

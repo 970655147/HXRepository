@@ -73,7 +73,7 @@ public abstract class AbstractSqliteTaskEntityJdbcRepository<T> extends Abstract
         if (CollectionUtils.isEmpty(list)) {
             return Page.empty(pageNo, pageSize);
         }
-        return Page.wrap(pageNo, pageSize, totalRecord, list);
+        return Page.wrap(list, pageNo, pageSize, totalRecord);
     }
 
     @Override

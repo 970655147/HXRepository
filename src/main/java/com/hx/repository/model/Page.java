@@ -49,8 +49,19 @@ public class Page<T> {
         return result;
     }
 
-    public static <T> Page<T> wrap(int pageNo, int pageSize, int totalRecord, List<T> list) {
-        int totalPage = ((totalRecord - 1) / pageSize) + 1;
+    /**
+     * 按照给定的 list 封装一个 Page
+     *
+     * @param pageNo      pageNo
+     * @param pageSize    pageSize
+     * @param totalRecord totalRecord
+     * @param list        list
+     * @return com.hx.repository.model.Page<T>
+     * @author Jerry.X.He
+     * @date 2021-02-02 16:08
+     */
+    public static <T> Page<T> wrap(List<T> list, int pageNo, int pageSize, int totalRecord) {
+        int totalPage = calcTotalPage(totalRecord, pageSize);
         Page<T> result = new Page<>();
         result.setPageNo(pageNo);
         result.setPageSize(pageSize);
@@ -58,6 +69,22 @@ public class Page<T> {
         result.setTotalRecord(totalRecord);
         result.setList(list);
         return result;
+    }
+
+    /**
+     * 根据总共的数量和分页数量计算总共的页数
+     *
+     * @param totalRecord totalRecord
+     * @param pageSize    pageSize
+     * @return int
+     * @author Jerry.X.He
+     * @date 2021-02-02 16:09
+     */
+    public static int calcTotalPage(int totalRecord, int pageSize) {
+        if (totalRecord == 0) {
+            return 0;
+        }
+        return ((totalRecord - 1) / pageSize) + 1;
     }
 
     /**

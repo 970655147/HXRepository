@@ -369,7 +369,7 @@ public abstract class AbstractSqliteEntityJdbcRepository<T> extends AbstractEnti
             FieldOperator queryOperator = cond.getOperator();
             String queryOperatorSql = FieldOperatorUtils.getSqliteOperatorSql(queryOperator);
             String queryKey = cond.getColumnName();
-            String fieldValue = wrapFieldValueSql(cond.getValue(), cond.getFieldInfo());
+            String fieldValue = wrapWhereFieldValueSql(cond.getValue(), queryOperator, cond.getFieldInfo());
             fieldConditionList.add(String.format(condTemplate, queryKey, queryOperatorSql, fieldValue));
         }
 
@@ -515,19 +515,39 @@ public abstract class AbstractSqliteEntityJdbcRepository<T> extends AbstractEnti
      * @date 2021-01-19 15:21
      */
     protected String wrapFieldValueSql(Object fieldValueObj, FieldInfo fieldInfo) {
-        if (fieldValueObj instanceof Collection) {
-            Iterator<String> ite = ((Collection) fieldValueObj).iterator();
-            List<String> itemList = new ArrayList<>();
-            while (ite.hasNext()) {
-                String item = wrapFieldValueSql(ite.next(), fieldInfo);
-                itemList.add(item);
-            }
-            String itemListSql = StringUtils.join(itemList, ", ");
-            return String.format("(%s)", itemListSql);
-        }
-
         return (fieldValueObj == null) ? "null"
                 : String.format("'%s'", String.valueOf(fieldValueObj));
+    }
+
+    /**
+     * 封装给定的 where 条件下面的 fieldValue
+     *
+     * @param fieldValueObj fieldValueObj
+     * @param fieldInfo     fieldInfo
+     * @return java.lang.String
+     * @author Jerry.X.He
+     * @date 2021-02-02 15:56
+     */
+    protected String wrapWhereFieldValueSql(Object fieldValueObj, FieldOperator queryOperator, FieldInfo fieldInfo) {
+        // 如果是 in/notIn
+        if (queryOperator == FieldOperator.IN || queryOperator == FieldOperator.NOT_IN) {
+            if (fieldValueObj instanceof Collection) {
+                Iterator<String> ite = ((Collection) fieldValueObj).iterator();
+                List<String> itemList = new ArrayList<>();
+                while (ite.hasNext()) {
+                    String item = wrapFieldValueSql(ite.next(), fieldInfo);
+                    itemList.add(item);
+                }
+                String itemListSql = StringUtils.join(itemList, ", ");
+                return String.format("(%s)", itemListSql);
+            }
+        }
+        if (queryOperator == FieldOperator.LIKE || queryOperator == FieldOperator.NOT_LIKE) {
+            return (fieldValueObj == null) ? "null"
+                    : String.format("'%%%s%%'", String.valueOf(fieldValueObj));
+        }
+
+        return wrapFieldValueSql(fieldValueObj, fieldInfo);
     }
 
 }
