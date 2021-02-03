@@ -6,6 +6,7 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -44,6 +45,20 @@ public class SpringContext {
         }
 
         context = new AnnotationConfigApplicationContext(applicationClazz);
+    }
+
+    /**
+     * 关闭 context
+     *
+     * @return void
+     * @author Jerry.X.He
+     * @date 2021-02-03 14:15
+     */
+    public static void destroy() {
+        if (context instanceof ConfigurableApplicationContext) {
+            ((ConfigurableApplicationContext) context).close();
+        }
+        context = null;
     }
 
     /**

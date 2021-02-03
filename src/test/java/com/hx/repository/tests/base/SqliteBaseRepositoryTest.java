@@ -2,6 +2,7 @@ package com.hx.repository.tests.base;
 
 import com.hx.repository.context.SpringContext;
 import com.hx.repository.context.SqliteTestApplication;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
 /**
@@ -16,6 +17,11 @@ public class SqliteBaseRepositoryTest extends BaseRepositoryTest {
     @BeforeClass
     public static void beforeClass01SpringContextInit() {
         SpringContext.init(SqliteTestApplication.class);
+    }
+
+    @AfterClass
+    public static void afterClass01SpringContextDestory() {
+        SpringContext.destroy();
     }
 
 }

@@ -217,6 +217,18 @@ public final class ClassUtils {
     }
 
     /**
+     * 判断 clazz 是否是 Number
+     *
+     * @param clazz clazz
+     * @return boolean
+     * @author Jerry.X.He
+     * @date 2021-02-03 14:01
+     */
+    public static boolean isNumberClass(Class clazz) {
+        return Number.class.isAssignableFrom(clazz);
+    }
+
+    /**
      * 获取给定的 classloader 已经加载的类 的所有的类
      *
      * @param classLoader classLoader

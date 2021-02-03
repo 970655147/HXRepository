@@ -2,6 +2,7 @@ package com.hx.repository.tests.base;
 
 import com.hx.repository.context.PostgresTestApplication;
 import com.hx.repository.context.SpringContext;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
 /**
@@ -16,6 +17,11 @@ public class PostgresBaseRepositoryTest extends BaseRepositoryTest {
     @BeforeClass
     public static void beforeClass01SpringContextInit() {
         SpringContext.init(PostgresTestApplication.class);
+    }
+
+    @AfterClass
+    public static void afterClass01SpringContextDestory() {
+        SpringContext.destroy();
     }
 
 }

@@ -1,6 +1,5 @@
 package com.hx.repository.tests.sqlite;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.hx.common.util.AssertUtils;
 import com.hx.log.util.Log;
@@ -353,9 +352,6 @@ public class Test02SqliteTaskTradeRepository extends SqliteBaseRepositoryTest {
             AssertUtils.assert0(toDebugJSON(trade), toDebugJSON(tradeInDb), " trade <> tradeInDb ");
         }
 
-        System.out.println(JSON.toJSONString(targetTrade));
-        System.out.println(JSON.toJSONString(tradeList));
-        System.out.println(JSON.toJSONString(tradeListInDb));
         AssertUtils.assert0(tradeListInDb.getPageNo(), pageNo, " pageNo <> page.pageNo ");
         AssertUtils.assert0(tradeListInDb.getPageSize(), pageSize, " pageSize <> page.pageSize ");
         AssertUtils.assert0(tradeListInDb.getTotalRecord(), totalRecord, " totalRecord <> page.totalRecord ");

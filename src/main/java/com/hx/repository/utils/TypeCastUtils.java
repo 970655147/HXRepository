@@ -1,5 +1,6 @@
 package com.hx.repository.utils;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.hx.log.file.FileUtils;
 import com.hx.log.util.Constants;
@@ -9,6 +10,7 @@ import com.hx.repository.model.FieldInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.function.BiFunction;
@@ -160,6 +162,50 @@ public final class TypeCastUtils {
         for (String key : json.keySet()) {
             result.put(key, json.get(key));
             result.put(Tools.underLine2Camel(key.toLowerCase()), json.get(key));
+        }
+        return result;
+    }
+
+    /**
+     * 调试 api, 将对象转换为 json
+     *
+     * @param obj obj
+     * @return com.alibaba.fastjson.JSONObject
+     * @author Jerry.X.He
+     * @date 2021-02-03 13:55
+     */
+    public static JSONObject castObject2Json(Object obj) {
+        return (JSONObject) JSON.toJSON(obj);
+    }
+
+    /**
+     * 调试 api, 将对象转换为 json, 去掉一部分基础类型之外的字段
+     *
+     * @param obj obj
+     * @return com.alibaba.fastjson.JSONObject
+     * @author Jerry.X.He
+     * @date 2021-02-03 13:55
+     */
+    public static JSONObject castObject2JsonSimplify(Object obj) {
+        ClassInfo classInfo = ClassInfoUtils.getClassInfo(obj.getClass());
+        List<FieldInfo> allFieldList = classInfo.allFieldInfo();
+
+        JSONObject result = new JSONObject();
+        for (FieldInfo fieldInfo : allFieldList) {
+            Class fieldType = fieldInfo.getField().getType();
+            Field field = fieldInfo.getField();
+            if (ClassUtils.isPrimitiveOrWrapperClass(fieldType)
+                || ClassUtils.isStringClass(fieldType)
+                || ClassUtils.isNumberClass(fieldType)) {
+                String fieldName = fieldInfo.getFieldName();
+                field.setAccessible(true);
+                try {
+                    String fieldValue = String.valueOf(field.get(obj));
+                    result.put(fieldName, fieldValue);
+                } catch (Exception e) {
+                    // ignore
+                }
+            }
         }
         return result;
     }
