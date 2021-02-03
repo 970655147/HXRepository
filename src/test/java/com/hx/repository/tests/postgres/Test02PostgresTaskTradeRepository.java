@@ -1,4 +1,4 @@
-package com.hx.repository.tests.sqlite;
+package com.hx.repository.tests.postgres;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -8,8 +8,8 @@ import com.hx.repository.consts.WebContextConstants;
 import com.hx.repository.context.SpringContext;
 import com.hx.repository.domain.Trade;
 import com.hx.repository.model.Page;
-import com.hx.repository.sqlite.TaskTradeRepository;
-import com.hx.repository.tests.base.SqliteBaseRepositoryTest;
+import com.hx.repository.postgres.PostgresTaskTradeRepository;
+import com.hx.repository.tests.base.PostgresBaseRepositoryTest;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -20,31 +20,31 @@ import java.util.Collections;
 import java.util.List;
 
 import static com.hx.log.log.LogPatternUtils.formatLogInfoWithIdx;
-import static com.hx.repository.tests.sqlite.Test01TradeRepository.lookUp;
-import static com.hx.repository.tests.sqlite.Test01TradeRepository.newRandomTrade;
+import static com.hx.repository.tests.postgres.Test01PostgresTradeRepository.lookUp;
+import static com.hx.repository.tests.postgres.Test01PostgresTradeRepository.newRandomTrade;
 
 /**
- * Test02TaskTradeRepository
+ * Test02PostgresTaskTradeRepository
  *
  * @author Jerry.X.He
  * @version 1.0
- * @date 2021-01-19 22:12
+ * @date 2021-02-03 10:47
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class Test02TaskTradeRepository extends SqliteBaseRepositoryTest {
+public class Test02PostgresTaskTradeRepository extends PostgresBaseRepositoryTest {
 
-    private static final String TEST_TASK_ID = "main";
+    private static final String TEST_TASK_ID = "public";
 
     @Before
     public void test01ClearTrades() {
-        TaskTradeRepository taskTradeRepository = SpringContext.getBean(TaskTradeRepository.class);
+        PostgresTaskTradeRepository taskTradeRepository = SpringContext.getBean(PostgresTaskTradeRepository.class);
         int updated = taskTradeRepository.deleteBy(TEST_TASK_ID, new JSONObject(), true);
         Log.info(formatLogInfoWithIdx(" 移除了 {0} 条交易信息 ", updated));
     }
 
     @Test
     public void test01Add() {
-        TaskTradeRepository taskTradeRepository = SpringContext.getBean(TaskTradeRepository.class);
+        PostgresTaskTradeRepository taskTradeRepository = SpringContext.getBean(PostgresTaskTradeRepository.class);
 
         Trade trade = newRandomTrade(0);
         int updated = taskTradeRepository.add(TEST_TASK_ID, trade);
@@ -59,7 +59,7 @@ public class Test02TaskTradeRepository extends SqliteBaseRepositoryTest {
 
     @Test
     public void test02AddAll() {
-        TaskTradeRepository taskTradeRepository = SpringContext.getBean(TaskTradeRepository.class);
+        PostgresTaskTradeRepository taskTradeRepository = SpringContext.getBean(PostgresTaskTradeRepository.class);
 
         int loopCount = 10;
         List<Trade> tradeList = new ArrayList<>();
@@ -79,7 +79,7 @@ public class Test02TaskTradeRepository extends SqliteBaseRepositoryTest {
 
     @Test
     public void test03SaveAdd() {
-        TaskTradeRepository taskTradeRepository = SpringContext.getBean(TaskTradeRepository.class);
+        PostgresTaskTradeRepository taskTradeRepository = SpringContext.getBean(PostgresTaskTradeRepository.class);
 
         Trade trade = newRandomTrade(0);
         int updated = taskTradeRepository.save(TEST_TASK_ID, trade);
@@ -94,7 +94,7 @@ public class Test02TaskTradeRepository extends SqliteBaseRepositoryTest {
 
     @Test
     public void test03SaveUpdate() {
-        TaskTradeRepository taskTradeRepository = SpringContext.getBean(TaskTradeRepository.class);
+        PostgresTaskTradeRepository taskTradeRepository = SpringContext.getBean(PostgresTaskTradeRepository.class);
 
         Trade trade = newRandomTrade(0);
         int updated = taskTradeRepository.add(TEST_TASK_ID, trade);
@@ -117,7 +117,7 @@ public class Test02TaskTradeRepository extends SqliteBaseRepositoryTest {
 
     @Test
     public void test04SaveNotNullAdd() {
-        TaskTradeRepository taskTradeRepository = SpringContext.getBean(TaskTradeRepository.class);
+        PostgresTaskTradeRepository taskTradeRepository = SpringContext.getBean(PostgresTaskTradeRepository.class);
 
         Trade trade = newRandomTrade(0);
         trade.setMemo(null);
@@ -136,7 +136,7 @@ public class Test02TaskTradeRepository extends SqliteBaseRepositoryTest {
 
     @Test
     public void test04SaveNotNullUpdate() {
-        TaskTradeRepository taskTradeRepository = SpringContext.getBean(TaskTradeRepository.class);
+        PostgresTaskTradeRepository taskTradeRepository = SpringContext.getBean(PostgresTaskTradeRepository.class);
 
         Trade trade = newRandomTrade(0);
         int updated = taskTradeRepository.add(TEST_TASK_ID, trade);
@@ -169,7 +169,7 @@ public class Test02TaskTradeRepository extends SqliteBaseRepositoryTest {
 
     @Test
     public void test05ListByAll() {
-        TaskTradeRepository taskTradeRepository = SpringContext.getBean(TaskTradeRepository.class);
+        PostgresTaskTradeRepository taskTradeRepository = SpringContext.getBean(PostgresTaskTradeRepository.class);
 
         int loopCount = 15;
         int pageNo = 1, pageSize = 12;
@@ -203,7 +203,7 @@ public class Test02TaskTradeRepository extends SqliteBaseRepositoryTest {
 
     @Test
     public void test05ListByTradeAmount() {
-        TaskTradeRepository taskTradeRepository = SpringContext.getBean(TaskTradeRepository.class);
+        PostgresTaskTradeRepository taskTradeRepository = SpringContext.getBean(PostgresTaskTradeRepository.class);
 
         int loopCount = 15;
         int pageNo = 1, pageSize = 12;
@@ -243,7 +243,7 @@ public class Test02TaskTradeRepository extends SqliteBaseRepositoryTest {
 
     @Test
     public void test05ListByTradeAmountEq() {
-        TaskTradeRepository taskTradeRepository = SpringContext.getBean(TaskTradeRepository.class);
+        PostgresTaskTradeRepository taskTradeRepository = SpringContext.getBean(PostgresTaskTradeRepository.class);
 
         int loopCount = 15;
         int pageNo = 1, pageSize = 12;
@@ -283,7 +283,7 @@ public class Test02TaskTradeRepository extends SqliteBaseRepositoryTest {
 
     @Test
     public void test05ListByTradeAmountNe() {
-        TaskTradeRepository taskTradeRepository = SpringContext.getBean(TaskTradeRepository.class);
+        PostgresTaskTradeRepository taskTradeRepository = SpringContext.getBean(PostgresTaskTradeRepository.class);
 
         int loopCount = 15;
         int pageNo = 1, pageSize = 12;
@@ -323,7 +323,7 @@ public class Test02TaskTradeRepository extends SqliteBaseRepositoryTest {
 
     @Test
     public void test05ListByTradeAmountGt() {
-        TaskTradeRepository taskTradeRepository = SpringContext.getBean(TaskTradeRepository.class);
+        PostgresTaskTradeRepository taskTradeRepository = SpringContext.getBean(PostgresTaskTradeRepository.class);
 
         int loopCount = 15;
         int pageNo = 1, pageSize = 12;
@@ -366,7 +366,7 @@ public class Test02TaskTradeRepository extends SqliteBaseRepositoryTest {
 
     @Test
     public void test05ListByTradeAmountGte() {
-        TaskTradeRepository taskTradeRepository = SpringContext.getBean(TaskTradeRepository.class);
+        PostgresTaskTradeRepository taskTradeRepository = SpringContext.getBean(PostgresTaskTradeRepository.class);
 
         int loopCount = 15;
         int pageNo = 1, pageSize = 12;
@@ -406,7 +406,7 @@ public class Test02TaskTradeRepository extends SqliteBaseRepositoryTest {
 
     @Test
     public void test05ListByTradeAmountLt() {
-        TaskTradeRepository taskTradeRepository = SpringContext.getBean(TaskTradeRepository.class);
+        PostgresTaskTradeRepository taskTradeRepository = SpringContext.getBean(PostgresTaskTradeRepository.class);
 
         int loopCount = 15;
         int pageNo = 1, pageSize = 12;
@@ -446,7 +446,7 @@ public class Test02TaskTradeRepository extends SqliteBaseRepositoryTest {
 
     @Test
     public void test05ListByTradeAmountLte() {
-        TaskTradeRepository taskTradeRepository = SpringContext.getBean(TaskTradeRepository.class);
+        PostgresTaskTradeRepository taskTradeRepository = SpringContext.getBean(PostgresTaskTradeRepository.class);
 
         int loopCount = 15;
         int pageNo = 1, pageSize = 12;
@@ -486,7 +486,7 @@ public class Test02TaskTradeRepository extends SqliteBaseRepositoryTest {
 
     @Test
     public void test05ListBySourceCardNumberLike() {
-        TaskTradeRepository taskTradeRepository = SpringContext.getBean(TaskTradeRepository.class);
+        PostgresTaskTradeRepository taskTradeRepository = SpringContext.getBean(PostgresTaskTradeRepository.class);
 
         int loopCount = 15;
         int pageNo = 1, pageSize = 12;
@@ -526,7 +526,7 @@ public class Test02TaskTradeRepository extends SqliteBaseRepositoryTest {
 
     @Test
     public void test05ListBySourceCardNumberNotLike() {
-        TaskTradeRepository taskTradeRepository = SpringContext.getBean(TaskTradeRepository.class);
+        PostgresTaskTradeRepository taskTradeRepository = SpringContext.getBean(PostgresTaskTradeRepository.class);
 
         int loopCount = 15;
         int pageNo = 1, pageSize = 12;
@@ -566,7 +566,7 @@ public class Test02TaskTradeRepository extends SqliteBaseRepositoryTest {
 
     @Test
     public void test05ListBySourceCardNumberIn() {
-        TaskTradeRepository taskTradeRepository = SpringContext.getBean(TaskTradeRepository.class);
+        PostgresTaskTradeRepository taskTradeRepository = SpringContext.getBean(PostgresTaskTradeRepository.class);
 
         int loopCount = 15;
         int pageNo = 1, pageSize = 12;
@@ -606,7 +606,7 @@ public class Test02TaskTradeRepository extends SqliteBaseRepositoryTest {
 
     @Test
     public void test05ListBySourceCardNumberNotIn() {
-        TaskTradeRepository taskTradeRepository = SpringContext.getBean(TaskTradeRepository.class);
+        PostgresTaskTradeRepository taskTradeRepository = SpringContext.getBean(PostgresTaskTradeRepository.class);
 
         int loopCount = 15;
         int pageNo = 1, pageSize = 12;
@@ -646,7 +646,7 @@ public class Test02TaskTradeRepository extends SqliteBaseRepositoryTest {
 
     @Test
     public void test05ListByOrderBySourceCardNumberAsc() {
-        TaskTradeRepository taskTradeRepository = SpringContext.getBean(TaskTradeRepository.class);
+        PostgresTaskTradeRepository taskTradeRepository = SpringContext.getBean(PostgresTaskTradeRepository.class);
 
         int loopCount = 15;
         int pageNo = 1, pageSize = 12;
@@ -672,7 +672,7 @@ public class Test02TaskTradeRepository extends SqliteBaseRepositoryTest {
 
     @Test
     public void test05ListByOrderBySourceCardNumberDesc() {
-        TaskTradeRepository taskTradeRepository = SpringContext.getBean(TaskTradeRepository.class);
+        PostgresTaskTradeRepository taskTradeRepository = SpringContext.getBean(PostgresTaskTradeRepository.class);
 
         int loopCount = 15;
         int pageNo = 1, pageSize = 12;
@@ -698,7 +698,7 @@ public class Test02TaskTradeRepository extends SqliteBaseRepositoryTest {
 
     @Test
     public void test06Update() {
-        TaskTradeRepository taskTradeRepository = SpringContext.getBean(TaskTradeRepository.class);
+        PostgresTaskTradeRepository taskTradeRepository = SpringContext.getBean(PostgresTaskTradeRepository.class);
 
         Trade trade = newRandomTrade(0);
         int updated = taskTradeRepository.save(TEST_TASK_ID, trade);
@@ -725,7 +725,7 @@ public class Test02TaskTradeRepository extends SqliteBaseRepositoryTest {
 
     @Test
     public void test07UpdateNotNull() {
-        TaskTradeRepository taskTradeRepository = SpringContext.getBean(TaskTradeRepository.class);
+        PostgresTaskTradeRepository taskTradeRepository = SpringContext.getBean(PostgresTaskTradeRepository.class);
 
         Trade trade = newRandomTrade(0);
         int updated = taskTradeRepository.save(TEST_TASK_ID, trade);
@@ -753,12 +753,12 @@ public class Test02TaskTradeRepository extends SqliteBaseRepositoryTest {
         AssertUtils.assert0(tradeInDb.getCashMarks(), null, false, " cashMarks == null ");
         AssertUtils.assert0(tradeInDb.getSourceCardNumber(), "updated", true, " sourceCardNumber == updated ");
         AssertUtils.assert0(tradeInDb.getTargetCardNumber(), "updated", true, " sourceCardNumber == updated ");
-        Log.info(formatLogInfoWithIdx(" test06Update succeed "));
+        Log.info(formatLogInfoWithIdx(" test07UpdateNotNull succeed "));
     }
 
     @Test
     public void test08UpdateBy() {
-        TaskTradeRepository taskTradeRepository = SpringContext.getBean(TaskTradeRepository.class);
+        PostgresTaskTradeRepository taskTradeRepository = SpringContext.getBean(PostgresTaskTradeRepository.class);
 
         int loopCount = 15;
         JSONObject queryMap = new JSONObject();
@@ -794,7 +794,7 @@ public class Test02TaskTradeRepository extends SqliteBaseRepositoryTest {
 
     @Test
     public void test09UpdateNotNullBy() {
-        TaskTradeRepository taskTradeRepository = SpringContext.getBean(TaskTradeRepository.class);
+        PostgresTaskTradeRepository taskTradeRepository = SpringContext.getBean(PostgresTaskTradeRepository.class);
 
         int loopCount = 15;
         JSONObject queryMap = new JSONObject();
@@ -836,7 +836,7 @@ public class Test02TaskTradeRepository extends SqliteBaseRepositoryTest {
 
     @Test
     public void test10DeleteById() {
-        TaskTradeRepository taskTradeRepository = SpringContext.getBean(TaskTradeRepository.class);
+        PostgresTaskTradeRepository taskTradeRepository = SpringContext.getBean(PostgresTaskTradeRepository.class);
 
         Trade trade = newRandomTrade(0);
         int updated = taskTradeRepository.add(TEST_TASK_ID, trade);
@@ -854,7 +854,7 @@ public class Test02TaskTradeRepository extends SqliteBaseRepositoryTest {
 
     @Test
     public void test11DeleteBy() {
-        TaskTradeRepository taskTradeRepository = SpringContext.getBean(TaskTradeRepository.class);
+        PostgresTaskTradeRepository taskTradeRepository = SpringContext.getBean(PostgresTaskTradeRepository.class);
 
         int loopCount = 15;
         JSONObject queryMap = new JSONObject();
@@ -878,7 +878,7 @@ public class Test02TaskTradeRepository extends SqliteBaseRepositoryTest {
 
     @Test
     public void test12AllDistinctBy() {
-        TaskTradeRepository taskTradeRepository = SpringContext.getBean(TaskTradeRepository.class);
+        PostgresTaskTradeRepository taskTradeRepository = SpringContext.getBean(PostgresTaskTradeRepository.class);
 
         int loopCount = 15;
         JSONObject queryMap = new JSONObject();
@@ -899,7 +899,7 @@ public class Test02TaskTradeRepository extends SqliteBaseRepositoryTest {
 
     @Test
     public void test13CountDistinctBy() {
-        TaskTradeRepository taskTradeRepository = SpringContext.getBean(TaskTradeRepository.class);
+        PostgresTaskTradeRepository taskTradeRepository = SpringContext.getBean(PostgresTaskTradeRepository.class);
 
         int loopCount = 15;
         JSONObject queryMap = new JSONObject();

@@ -21,6 +21,7 @@ import javax.tools.JavaCompiler;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
 import java.io.File;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -82,8 +83,12 @@ public class BaseTest {
             if (fieldInfo == null) {
                 continue;
             }
+            Object value = json.get(key);
+            if (value != null && value instanceof BigDecimal) {
+                value = (((BigDecimal) value).setScale(3)).toString();
+            }
 
-            result.put(key, json.get(key));
+            result.put(key, String.valueOf(value));
         }
         return result;
     }

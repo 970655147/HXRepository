@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
  * @date 2021-01-19 22:08
  */
 @Repository
-public class TaskTradeRepository extends AbstractSqliteTaskEntityJdbcRepository<Trade> {
+public class SqliteTaskTradeRepository extends AbstractSqliteTaskEntityJdbcRepository<Trade> {
 
     @Override
     public Class<Trade> getClazz() {

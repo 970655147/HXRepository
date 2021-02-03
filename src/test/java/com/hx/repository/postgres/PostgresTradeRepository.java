@@ -1,18 +1,18 @@
-package com.hx.repository.sqlite;
+package com.hx.repository.postgres;
 
-import com.hx.repository.base.sqlite.AbstractSqliteMainEntityJdbcRepository;
+import com.hx.repository.base.postgres.AbstractPostgresMainEntityJdbcRepository;
 import com.hx.repository.domain.Trade;
 import org.springframework.stereotype.Repository;
 
 /**
- * TradeRepositoryMainEntity
+ * TradeRepository
  *
- * @author Jerry.X.He <970655147@qq.com>
+ * @author Jerry.X.He
  * @version 1.0
- * @date 2021-01-15 11:54
+ * @date 2021-02-03 10:45
  */
 @Repository
-public class TradeRepository extends AbstractSqliteMainEntityJdbcRepository<Trade> {
+public class PostgresTradeRepository extends AbstractPostgresMainEntityJdbcRepository<Trade> {
 
     @Override
     public Class<Trade> getClazz() {
