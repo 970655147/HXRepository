@@ -22,6 +22,8 @@ public enum DbType implements Code2Msg<String, String> {
     REDIS("REDIS", "redis"),
     /** mongo */
     MONGO("MONGO", "mongo"),
+    /** sqlite */
+    SQLITE("SQLITE", "sqlite"),
     ;
 
     private final String code;

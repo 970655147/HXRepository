@@ -4,13 +4,11 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.hx.repository.domain.BaseEntity;
 import com.hx.repository.model.ClassInfo;
-import com.hx.repository.model.FieldInfo;
 import com.hx.repository.utils.ClassInfoUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * MainEntityJdbcRepository
@@ -151,13 +149,6 @@ public abstract class AbstractEntityJdbcRepository<T> {
      * @date 2021-01-17 19:20
      */
     protected T fromJson(JSONObject json) {
-        ClassInfo classInfo = getClassInfo();
-        List<FieldInfo> allFieldList = classInfo.allFieldInfo();
-        for (FieldInfo fieldInfo : allFieldList) {
-            String columnName = fieldInfo.getColumnName();
-            json.put(fieldInfo.getFieldName(), json.get(columnName));
-        }
-
         return JSON.toJavaObject(json, getClazz());
     }
 
