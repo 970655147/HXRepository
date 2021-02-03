@@ -9,7 +9,7 @@ import com.hx.repository.context.SpringContext;
 import com.hx.repository.domain.Trade;
 import com.hx.repository.model.Page;
 import com.hx.repository.sqlite.TaskTradeRepository;
-import com.hx.repository.tests.base.BaseServiceTest;
+import com.hx.repository.tests.base.SqliteBaseRepositoryTest;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -31,7 +31,7 @@ import static com.hx.repository.tests.sqlite.Test01TradeRepository.newRandomTrad
  * @date 2021-01-19 22:12
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class Test02TaskTradeRepository extends BaseServiceTest {
+public class Test02TaskTradeRepository extends SqliteBaseRepositoryTest {
 
     private static final String TEST_TASK_ID = "main";
 

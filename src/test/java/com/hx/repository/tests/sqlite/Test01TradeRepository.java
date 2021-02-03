@@ -8,7 +8,7 @@ import com.hx.repository.context.SpringContext;
 import com.hx.repository.domain.Trade;
 import com.hx.repository.model.Page;
 import com.hx.repository.sqlite.TradeRepository;
-import com.hx.repository.tests.base.BaseServiceTest;
+import com.hx.repository.tests.base.SqliteBaseRepositoryTest;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
@@ -28,7 +28,7 @@ import static com.hx.log.log.LogPatternUtils.formatLogInfoWithIdx;
  * @date 2021-01-18 10:50
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class Test01TradeRepository extends BaseServiceTest {
+public class Test01TradeRepository extends SqliteBaseRepositoryTest {
 
     @Before
     public void test01ClearTrades() {
@@ -176,7 +176,7 @@ public class Test01TradeRepository extends BaseServiceTest {
         int updated = tradeRepository.addAll(tradeList);
         Log.info(formatLogInfoWithIdx(" 新增了 {0} 条交易信息 ", updated));
         int totalRecord = tradeList.size();
-        int totalPage = (((totalRecord - 1) / pageSize) + 1);
+        int totalPage = Page.calcTotalPage(totalRecord, pageSize);
         int expectedListSize = pageSize < totalRecord ? pageSize : totalRecord;
 
         JSONObject queryMap = new JSONObject();
@@ -215,7 +215,7 @@ public class Test01TradeRepository extends BaseServiceTest {
                 .stream()
                 .filter(row -> row.getTradeAmount().compareTo(targetTrade.getTradeAmount()) == 0)
                 .count();
-        int totalPage = (((totalRecord - 1) / pageSize) + 1);
+        int totalPage = Page.calcTotalPage(totalRecord, pageSize);
         int expectedListSize = pageSize < totalRecord ? pageSize : totalRecord;
 
         JSONObject queryMap = new JSONObject();
@@ -255,7 +255,7 @@ public class Test01TradeRepository extends BaseServiceTest {
                 .stream()
                 .filter(row -> row.getTradeAmount().compareTo(targetTrade.getTradeAmount()) == 0)
                 .count();
-        int totalPage = (((totalRecord - 1) / pageSize) + 1);
+        int totalPage = Page.calcTotalPage(totalRecord, pageSize);
         int expectedListSize = pageSize < totalRecord ? pageSize : totalRecord;
 
         JSONObject queryMap = new JSONObject();
@@ -295,7 +295,7 @@ public class Test01TradeRepository extends BaseServiceTest {
                 .stream()
                 .filter(row -> (row.getTradeAmount().compareTo(targetTrade.getTradeAmount())) != 0)
                 .count();
-        int totalPage = (((totalRecord - 1) / pageSize) + 1);
+        int totalPage = Page.calcTotalPage(totalRecord, pageSize);
         int expectedListSize = pageSize < totalRecord ? pageSize : totalRecord;
 
         JSONObject queryMap = new JSONObject();
@@ -335,7 +335,7 @@ public class Test01TradeRepository extends BaseServiceTest {
                 .stream()
                 .filter(row -> row.getTradeAmount().compareTo(targetTrade.getTradeAmount()) > 0)
                 .count();
-        int totalPage = (((totalRecord - 1) / pageSize) + 1);
+        int totalPage = Page.calcTotalPage(totalRecord, pageSize);
         int expectedListSize = pageSize < totalRecord ? pageSize : totalRecord;
 
         JSONObject queryMap = new JSONObject();
@@ -375,7 +375,7 @@ public class Test01TradeRepository extends BaseServiceTest {
                 .stream()
                 .filter(row -> row.getTradeAmount().compareTo(targetTrade.getTradeAmount()) >= 0)
                 .count();
-        int totalPage = (((totalRecord - 1) / pageSize) + 1);
+        int totalPage = Page.calcTotalPage(totalRecord, pageSize);
         int expectedListSize = pageSize < totalRecord ? pageSize : totalRecord;
 
         JSONObject queryMap = new JSONObject();
@@ -415,7 +415,7 @@ public class Test01TradeRepository extends BaseServiceTest {
                 .stream()
                 .filter(row -> row.getTradeAmount().compareTo(targetTrade.getTradeAmount()) < 0)
                 .count();
-        int totalPage = (((totalRecord - 1) / pageSize) + 1);
+        int totalPage = Page.calcTotalPage(totalRecord, pageSize);
         int expectedListSize = pageSize < totalRecord ? pageSize : totalRecord;
 
         JSONObject queryMap = new JSONObject();
@@ -455,7 +455,7 @@ public class Test01TradeRepository extends BaseServiceTest {
                 .stream()
                 .filter(row -> row.getTradeAmount().compareTo(targetTrade.getTradeAmount()) <= 0)
                 .count();
-        int totalPage = (((totalRecord - 1) / pageSize) + 1);
+        int totalPage = Page.calcTotalPage(totalRecord, pageSize);
         int expectedListSize = pageSize < totalRecord ? pageSize : totalRecord;
 
         JSONObject queryMap = new JSONObject();
@@ -495,7 +495,7 @@ public class Test01TradeRepository extends BaseServiceTest {
                 .stream()
                 .filter(row -> row.getSourceCardNumber().contains(targetTrade.getSourceCardNumber()))
                 .count();
-        int totalPage = (((totalRecord - 1) / pageSize) + 1);
+        int totalPage = Page.calcTotalPage(totalRecord, pageSize);
         int expectedListSize = pageSize < totalRecord ? pageSize : totalRecord;
 
         JSONObject queryMap = new JSONObject();
@@ -535,7 +535,7 @@ public class Test01TradeRepository extends BaseServiceTest {
                 .stream()
                 .filter(row -> (!row.getSourceCardNumber().contains(targetTrade.getSourceCardNumber())))
                 .count();
-        int totalPage = (((totalRecord - 1) / pageSize) + 1);
+        int totalPage = Page.calcTotalPage(totalRecord, pageSize);
         int expectedListSize = pageSize < totalRecord ? pageSize : totalRecord;
 
         JSONObject queryMap = new JSONObject();
@@ -575,7 +575,7 @@ public class Test01TradeRepository extends BaseServiceTest {
                 .stream()
                 .filter(row -> (row.getSourceCardNumber().equals(targetTrade.getSourceCardNumber())))
                 .count();
-        int totalPage = (((totalRecord - 1) / pageSize) + 1);
+        int totalPage = Page.calcTotalPage(totalRecord, pageSize);
         int expectedListSize = pageSize < totalRecord ? pageSize : totalRecord;
 
         JSONObject queryMap = new JSONObject();
@@ -615,7 +615,7 @@ public class Test01TradeRepository extends BaseServiceTest {
                 .stream()
                 .filter(row -> (!row.getSourceCardNumber().equals(targetTrade.getSourceCardNumber())))
                 .count();
-        int totalPage = (((totalRecord - 1) / pageSize) + 1);
+        int totalPage = Page.calcTotalPage(totalRecord, pageSize);
         int expectedListSize = pageSize < totalRecord ? pageSize : totalRecord;
 
         JSONObject queryMap = new JSONObject();

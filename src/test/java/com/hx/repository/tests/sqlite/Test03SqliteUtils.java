@@ -2,7 +2,7 @@ package com.hx.repository.tests.sqlite;
 
 import com.hx.common.util.AssertUtils;
 import com.hx.repository.domain.Trade;
-import com.hx.repository.tests.base.BaseServiceTest;
+import com.hx.repository.tests.base.SqliteBaseRepositoryTest;
 import com.hx.repository.utils.SqliteUtils;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -19,7 +19,7 @@ import java.util.List;
  * @date 2021-01-24 17:07
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class Test03SqliteUtils extends BaseServiceTest {
+public class Test03SqliteUtils extends SqliteBaseRepositoryTest {
 
     /** BASE_PATH */
     private static String BASE_PATH = System.getProperty("user.dir");

@@ -1,7 +1,7 @@
 package com.hx.repository.tests.utils;
 
 import com.hx.repository.domain.BaseEntity;
-import com.hx.repository.tests.base.BaseServiceTest;
+import com.hx.repository.tests.base.BaseTest;
 import com.hx.repository.utils.ClassUtils;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
  * @date 2021-02-01 15:59
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class Test02ClassUtils extends BaseServiceTest {
+public class Test02ClassUtils extends BaseTest {
 
     /** BASE_PATH */
     private static String BASE_PATH = System.getProperty("user.dir");

@@ -5,13 +5,10 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
@@ -28,9 +25,6 @@ import java.util.Map;
  * @version 1.0
  * @date 2021-01-15 11:27
  */
-@ComponentScan(basePackages = {"com.hx"})
-@EnableAutoConfiguration
-@PropertySource(value = "classpath:application.properties")
 public class SpringContext {
 
     /** context */
@@ -44,12 +38,12 @@ public class SpringContext {
      * @author Jerry.X.He
      * @date 2021-01-15 11:49
      */
-    public static void init() {
+    public static void init(Class applicationClazz) {
         if (context != null) {
             return;
         }
 
-        context = new AnnotationConfigApplicationContext(SpringContext.class);
+        context = new AnnotationConfigApplicationContext(applicationClazz);
     }
 
     /**

@@ -2,7 +2,7 @@ package com.hx.repository.tests.utils;
 
 import com.hx.common.util.AssertUtils;
 import com.hx.repository.domain.Trade;
-import com.hx.repository.tests.base.BaseServiceTest;
+import com.hx.repository.tests.base.BaseTest;
 import com.hx.repository.utils.TypeCastUtils;
 import com.hx.repository.view.TradeView;
 import org.junit.FixMethodOrder;
@@ -20,7 +20,7 @@ import java.util.List;
  * @date 2021-01-21 17:16
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class Test01TypeCastUtils extends BaseServiceTest {
+public class Test01TypeCastUtils extends BaseTest {
 
     /** BASE_PATH */
     private static String BASE_PATH = System.getProperty("user.dir");
