@@ -18,6 +18,7 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.tools.JavaCompiler;
+import javax.tools.JavaFileObject;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
 import java.io.File;
@@ -29,6 +30,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.hx.log.log.LogPatternUtils.formatLogInfoWithIdx;
+import static java.math.BigDecimal.ROUND_UNNECESSARY;
 
 /**
  * BaseTest
@@ -72,8 +74,8 @@ public class BaseTest {
             return new JSONObject();
         }
 
-        Class clazz = object.getClass();
-        ClassInfo classInfo = ClassInfoUtils.getClassInfo(clazz);
+        Class<?> clazz = object.getClass();
+        ClassInfo<?> classInfo = ClassInfoUtils.getClassInfo(clazz);
         List<FieldInfo> fieldInfoList = classInfo.getFields();
 
         JSONObject json = (JSONObject) JSON.toJSON(object);
@@ -84,8 +86,8 @@ public class BaseTest {
                 continue;
             }
             Object value = json.get(key);
-            if (value != null && value instanceof BigDecimal) {
-                value = (((BigDecimal) value).setScale(3)).toString();
+            if (value instanceof BigDecimal) {
+                value = (((BigDecimal) value).setScale(3, ROUND_UNNECESSARY)).toString();
             }
 
             result.put(key, String.valueOf(value));
@@ -102,7 +104,6 @@ public class BaseTest {
      *
      * @param lines    lines
      * @param filePath filePath
-     * @return void
      * @author Jerry.X.He
      * @date 2021-01-21 18:04
      */
@@ -123,7 +124,6 @@ public class BaseTest {
      * 编译已经生成的 .java 文件, 断言给定的 生成的 java 文件是否合法
      *
      * @param filePath filePath
-     * @return void
      * @author Jerry.X.He
      * @date 2021-01-22 15:59
      */
@@ -133,7 +133,7 @@ public class BaseTest {
 
         File theJavaFile = new File(filePath);
         try {
-            Iterable fileObjects = sjfm.getJavaFileObjects(theJavaFile);
+            Iterable<? extends JavaFileObject> fileObjects = sjfm.getJavaFileObjects(theJavaFile);
             jc.getTask(null, sjfm, null, null, null, fileObjects).call();
             sjfm.close();
         } catch (Exception e) {
@@ -154,7 +154,6 @@ public class BaseTest {
      * @param left    left
      * @param right   right
      * @param message message
-     * @return void
      * @author Jerry.X.He
      * @date 2021-02-01 16:35
      */
@@ -167,6 +166,7 @@ public class BaseTest {
             String rightString = JSON.toJSONString(right);
             AssertUtils.assert0(formatLogInfoWithIdx(" msg : {0}, left : {1}, right : {2} ",
                                                      message, leftString, rightString));
+            return;
         }
 
         List<String> onlyLeft = new ArrayList<>(left);
@@ -189,7 +189,6 @@ public class BaseTest {
      * @param list             list
      * @param printFunc        printFunc
      * @param containerVarName containerVarName
-     * @return void
      * @author Jerry.X.He
      * @date 2021-02-01 16:58
      */
@@ -209,7 +208,6 @@ public class BaseTest {
      * @param list             list
      * @param printFunc        printFunc
      * @param containerVarName containerVarName
-     * @return void
      * @author Jerry.X.He
      * @date 2021-02-01 16:58
      */

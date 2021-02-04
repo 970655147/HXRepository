@@ -29,7 +29,7 @@ public class MysqlBaseRepositoryTest extends BaseRepositoryTest {
 
     @BeforeClass
     public static void beforeClass02CreateTradeSchema() {
-        Class clazz = Trade.class;
+        Class<Trade> clazz = Trade.class;
         List<String> schemaList = MysqlUtils.generateTableSchema(clazz, "fakepath");
         JdbcTemplate jdbcTemplate = SpringContext.getBean(JdbcTemplate.class);
 

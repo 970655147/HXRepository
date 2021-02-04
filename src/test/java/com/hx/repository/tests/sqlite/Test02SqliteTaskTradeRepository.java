@@ -645,8 +645,6 @@ public class Test02SqliteTaskTradeRepository extends SqliteBaseRepositoryTest {
         SqliteTaskTradeRepository taskTradeRepository = SpringContext.getBean(SqliteTaskTradeRepository.class);
 
         int loopCount = 15;
-        int pageNo = 1, pageSize = 12;
-
         List<Trade> tradeList = new ArrayList<>();
         for (int i = 0; i < loopCount; i++) {
             tradeList.add(newRandomTrade(i));
@@ -671,8 +669,6 @@ public class Test02SqliteTaskTradeRepository extends SqliteBaseRepositoryTest {
         SqliteTaskTradeRepository taskTradeRepository = SpringContext.getBean(SqliteTaskTradeRepository.class);
 
         int loopCount = 15;
-        int pageNo = 1, pageSize = 12;
-
         List<Trade> tradeList = new ArrayList<>();
         for (int i = 0; i < loopCount; i++) {
             tradeList.add(newRandomTrade(i));

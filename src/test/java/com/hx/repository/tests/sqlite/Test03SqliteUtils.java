@@ -42,7 +42,7 @@ public class Test03SqliteUtils extends SqliteBaseRepositoryTest {
         Class<Trade> clazz = Trade.class;
         String fileName = "Test01TradeSchemaWithExistsSchema";
         String filePath = BASE_IGNORE_PATH + String.format("/%s.sql", fileName);
-        saveLines(tradeSchemaWithExistsSchemaCode(fileName), filePath);
+        saveLines(tradeSchemaWithExistsSchemaCode(), filePath);
 
         List<String> lines = SqliteUtils.generateTableSchema(clazz, filePath);
         saveLines(lines, filePath);
@@ -53,7 +53,7 @@ public class Test03SqliteUtils extends SqliteBaseRepositoryTest {
         Class<Trade> clazz = Trade.class;
         String fileName = "Test01TradeSchemaWithNotExistsSchema";
         String filePath = BASE_IGNORE_PATH + String.format("/%s.sql", fileName);
-        saveLines(tradeSchemaWithNotExistsSchemaCode(fileName), filePath);
+        saveLines(tradeSchemaWithNotExistsSchemaCode(), filePath);
 
         List<String> lines = SqliteUtils.generateTableSchema(clazz, filePath);
         saveLines(lines, filePath);
@@ -68,7 +68,7 @@ public class Test03SqliteUtils extends SqliteBaseRepositoryTest {
      * @author Jerry.X.He
      * @date 2021-01-21 18:14
      */
-    private List<String> tradeSchemaWithExistsSchemaCode(String className) {
+    private List<String> tradeSchemaWithExistsSchemaCode() {
         String code = "CREATE TABLE TRADE (\n" +
                       "    SOURCE_ACCOUNT_NAME   VARCHAR(111)            DEFAULT NULL,\n" +
                       "    SOURCE_CARD_NUMBER    VARCHAR(111)   NOT NULL DEFAULT NULL,\n" +
@@ -119,7 +119,7 @@ public class Test03SqliteUtils extends SqliteBaseRepositoryTest {
      * @author Jerry.X.He
      * @date 2021-01-21 18:14
      */
-    private List<String> tradeSchemaWithNotExistsSchemaCode(String className) {
+    private List<String> tradeSchemaWithNotExistsSchemaCode() {
         String code = "CREATE TABLE TRADE1 (\n" +
                       "    SOURCE_ACCOUNT_NAME   VARCHAR(255)            DEFAULT NULL,\n" +
                       "    SOURCE_CARD_NUMBER    VARCHAR(255)   NOT NULL DEFAULT NULL,\n" +

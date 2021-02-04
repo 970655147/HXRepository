@@ -28,7 +28,7 @@ public class Test02ClassUtils extends BaseTest {
     private static String BASE_CLASS_PATH = BASE_PATH + "/target/test-classes";
 
     /** printFunc */
-    private static Function<Class, String> printFunc = (clazz) -> clazz.getName();
+    private static Function<Class, String> printFunc = Class::getName;
 
     @Test
     public void test01GetAllEntityInFile() throws Exception {

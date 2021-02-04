@@ -29,7 +29,7 @@ public class SqliteBaseRepositoryTest extends BaseRepositoryTest {
 
     @BeforeClass
     public static void beforeClass02CreateTradeSchema() {
-        Class clazz = Trade.class;
+        Class<Trade> clazz = Trade.class;
         List<String> schemaList = PostgresUtils.generateTableSchema(clazz, "fakepath");
         JdbcTemplate jdbcTemplate = SpringContext.getBean(JdbcTemplate.class);
 

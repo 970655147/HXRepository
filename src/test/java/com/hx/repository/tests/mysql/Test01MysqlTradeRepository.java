@@ -643,8 +643,6 @@ public class Test01MysqlTradeRepository extends MysqlBaseRepositoryTest {
         MysqlTradeRepository tradeRepository = SpringContext.getBean(MysqlTradeRepository.class);
 
         int loopCount = 15;
-        int pageNo = 1, pageSize = 12;
-
         List<Trade> tradeList = new ArrayList<>();
         for (int i = 0; i < loopCount; i++) {
             tradeList.add(newRandomTrade(i));
@@ -669,8 +667,6 @@ public class Test01MysqlTradeRepository extends MysqlBaseRepositoryTest {
         MysqlTradeRepository tradeRepository = SpringContext.getBean(MysqlTradeRepository.class);
 
         int loopCount = 15;
-        int pageNo = 1, pageSize = 12;
-
         List<Trade> tradeList = new ArrayList<>();
         for (int i = 0; i < loopCount; i++) {
             tradeList.add(newRandomTrade(i));
