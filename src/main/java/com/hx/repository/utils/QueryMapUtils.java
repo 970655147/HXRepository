@@ -115,6 +115,10 @@ public final class QueryMapUtils {
      * @date 2021-02-02 16:20
      */
     public static void generateOrderBy(JSONObject queryMap, List<String> orderBys) {
+        if (orderBys == null) {
+            return;
+        }
+
         for (int i = 0, len = orderBys.size(); i < len; i++) {
             String orderBy = orderBys.get(i);
             int directionIdx = (i + 1 >= len) ? -1 : i + 1;

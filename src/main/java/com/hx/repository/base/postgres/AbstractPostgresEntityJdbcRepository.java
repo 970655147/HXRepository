@@ -149,7 +149,7 @@ public abstract class AbstractPostgresEntityJdbcRepository<T> extends AbstractEn
     }
 
     protected String generateCountBySql(JSONObject queryMap, boolean andOr) {
-        return generateAllBySql0(queryMap, andOr, "COUNT(*)");
+        return generateAllBySqlWithoutOrderBy(queryMap, andOr, "COUNT(*)");
     }
 
     /**
@@ -185,6 +185,28 @@ public abstract class AbstractPostgresEntityJdbcRepository<T> extends AbstractEn
         String sqlTemplate = " SELECT %s FROM %s %s; ";
         String whereCondAndOrderBy = generateWhereCondAndOrderBy(queryMap, andOr);
         return String.format(sqlTemplate, queryFieldList, tableName(), whereCondAndOrderBy);
+    }
+
+    /**
+     * 去掉排序的 select *
+     *
+     * @param queryMap       queryMap
+     * @param andOr          andOr
+     * @param queryFieldList queryFieldList
+     * @return java.lang.String
+     * @author Jerry.X.He
+     * @date 2021-02-04 10:28
+     */
+    protected String generateAllBySqlWithoutOrderBy(JSONObject queryMap, boolean andOr, String queryFieldList) {
+        String sqlTemplate = " SELECT %s FROM %s %s; ";
+        String whereCondFragment = generateWhereCond(queryMap, andOr);
+
+        String whereCond = SqlConstants.EMPTY_STR;
+        if (StringUtils.isNotBlank(whereCondFragment)) {
+            whereCond = (" WHERE " + whereCondFragment);
+        }
+
+        return String.format(sqlTemplate, queryFieldList, tableName(), whereCond);
     }
 
     /**
