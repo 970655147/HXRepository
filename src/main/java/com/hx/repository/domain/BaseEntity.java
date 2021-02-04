@@ -22,7 +22,7 @@ public class BaseEntity {
 
     @Id
     @GeneratedValue(generator = "uuid2")
-    @Column(name = COLUMN_ID)
+    @Column(name = COLUMN_ID, nullable = false, updatable = false)
     private String id;
 
     @Column(name = COLUMN_SOURCE, nullable = false, updatable = false)

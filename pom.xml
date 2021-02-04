@@ -19,6 +19,7 @@
         <hikaricp.version>3.4.5</hikaricp.version>
         <sqlite.version>3.32.3.2</sqlite.version>
         <postgresql.version>42.2.16</postgresql.version>
+        <mysql.version>8.0.22</mysql.version>
 
     </properties>
 
@@ -98,6 +99,12 @@
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>${postgresql.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>${mysql.version}</version>
             <scope>test</scope>
         </dependency>
 

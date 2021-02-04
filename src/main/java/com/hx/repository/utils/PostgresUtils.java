@@ -238,6 +238,9 @@ public final class PostgresUtils {
         Object defaultValue = fieldInfo.getDefaultValue();
         Field field = fieldInfo.getField();
         Class fieldType = field.getType();
+        if (!fieldInfo.isNullable() && (defaultValue == null)) {
+            return "";
+        }
         if (defaultValue == null) {
             return "DEFAULT NULL";
         }

@@ -23,7 +23,7 @@ import static com.hx.repository.utils.TypeCastUtils.*;
  * @version 1.0
  * @date 2021-01-24 16:13
  */
-public final class SqliteUtils {
+public final class MysqlUtils {
 
     /** 默认的缩进 */
     public static int IDENT = 4;
@@ -31,7 +31,7 @@ public final class SqliteUtils {
     public static int IDENT_TIMES_INITIAL = 0;
 
     // disable constructor
-    private SqliteUtils() {
+    private MysqlUtils() {
         Tools.assert0("can't instantiate !");
     }
 
@@ -51,8 +51,8 @@ public final class SqliteUtils {
             }
 
             generateSchemaAndSave(lines, clazz,
-                                  SqliteUtils::generateCreateTableSignature,
-                                  SqliteUtils::generateCreateTableSchema);
+                                  MysqlUtils::generateCreateTableSignature,
+                                  MysqlUtils::generateCreateTableSchema);
 
             return lines;
         } catch (Exception e) {
@@ -180,7 +180,7 @@ public final class SqliteUtils {
         }
 
         if (ClassUtils.isBooleanClass(fieldType)) {
-            return "BOOLEAN";
+            return "TINYINT(1)";
         } else if (ClassUtils.isIntegerClass(fieldType)) {
             return "INT";
         } else if (ClassUtils.isLongClass(fieldType)) {
@@ -188,7 +188,7 @@ public final class SqliteUtils {
         } else if (ClassUtils.isBigIntegerClass(fieldType)) {
             return "BIGINT";
         } else if (ClassUtils.isFloatClass(fieldType)) {
-            return "NUMERIC(20, 2)";
+            return "FLOAT(20, 2)";
         } else if (ClassUtils.isBigDecimalClass(fieldType)) {
             return "NUMERIC(20, 2)";
         } else if (ClassUtils.isStringClass(fieldType)) {
@@ -258,7 +258,7 @@ public final class SqliteUtils {
         } else if (ClassUtils.isBigDecimalClass(fieldType)) {
             return "DEFAULT " + defaultValue;
         } else if (ClassUtils.isStringClass(fieldType)) {
-            return "DEFAULT \"" + defaultValue + "\"";
+            return "DEFAULT '" + defaultValue + "'";
         }
         throw new RuntimeException(" unknown field :  " + JSON.toJSONString(fieldInfo));
     }
