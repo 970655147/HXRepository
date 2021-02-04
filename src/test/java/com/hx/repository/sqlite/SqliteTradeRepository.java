@@ -19,10 +19,4 @@ public class SqliteTradeRepository extends AbstractSqliteMainEntityJdbcRepositor
         return Trade.class;
     }
 
-    public void doBiz() {
-
-        System.out.println(" doBiz in repository ");
-
-    }
-
 }

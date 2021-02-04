@@ -1,4 +1,4 @@
-package com.hx.repository.tests.postgres;
+package com.hx.repository.tests.mysql;
 
 import com.alibaba.fastjson.JSONObject;
 import com.hx.common.util.AssertUtils;
@@ -7,8 +7,8 @@ import com.hx.repository.consts.WebContextConstants;
 import com.hx.repository.context.SpringContext;
 import com.hx.repository.domain.Trade;
 import com.hx.repository.model.Page;
-import com.hx.repository.postgres.PostgresTradeRepository;
-import com.hx.repository.tests.base.PostgresBaseRepositoryTest;
+import com.hx.repository.mysql.MysqlTradeRepository;
+import com.hx.repository.tests.base.MysqlBaseRepositoryTest;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -23,25 +23,25 @@ import static com.hx.repository.tests.sqlite.Test01SqliteTradeRepository.lookUp;
 import static com.hx.repository.tests.sqlite.Test01SqliteTradeRepository.newRandomTrade;
 
 /**
- * Test01PostgresTradeRepository
+ * Test01MysqlTradeRepository
  *
  * @author Jerry.X.He
  * @version 1.0
- * @date 2021-02-03 10:47
+ * @date 2021-02-04 11:51
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
+public class Test01MysqlTradeRepository extends MysqlBaseRepositoryTest {
 
     @Before
     public void test01ClearTrades() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTradeRepository tradeRepository = SpringContext.getBean(MysqlTradeRepository.class);
         int updated = tradeRepository.deleteBy(new JSONObject(), true);
         Log.info(formatLogInfoWithIdx(" 移除了 {0} 条交易信息 ", updated));
     }
 
     @Test
     public void test01Add() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTradeRepository tradeRepository = SpringContext.getBean(MysqlTradeRepository.class);
 
         Trade trade = newRandomTrade(0);
         int updated = tradeRepository.add(trade);
@@ -56,7 +56,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
 
     @Test
     public void test02AddAll() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTradeRepository tradeRepository = SpringContext.getBean(MysqlTradeRepository.class);
 
         int loopCount = 10;
         List<Trade> tradeList = new ArrayList<>();
@@ -76,7 +76,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
 
     @Test
     public void test03SaveAdd() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTradeRepository tradeRepository = SpringContext.getBean(MysqlTradeRepository.class);
 
         Trade trade = newRandomTrade(0);
         int updated = tradeRepository.save(trade);
@@ -91,7 +91,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
 
     @Test
     public void test03SaveUpdate() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTradeRepository tradeRepository = SpringContext.getBean(MysqlTradeRepository.class);
 
         Trade trade = newRandomTrade(0);
         int updated = tradeRepository.add(trade);
@@ -114,7 +114,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
 
     @Test
     public void test04SaveNotNullAdd() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTradeRepository tradeRepository = SpringContext.getBean(MysqlTradeRepository.class);
 
         Trade trade = newRandomTrade(0);
         trade.setMemo(null);
@@ -133,7 +133,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
 
     @Test
     public void test04SaveNotNullUpdate() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTradeRepository tradeRepository = SpringContext.getBean(MysqlTradeRepository.class);
 
         Trade trade = newRandomTrade(0);
         int updated = tradeRepository.add(trade);
@@ -166,7 +166,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
 
     @Test
     public void test05ListByAll() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTradeRepository tradeRepository = SpringContext.getBean(MysqlTradeRepository.class);
 
         int loopCount = 15;
         int pageNo = 1, pageSize = 12;
@@ -200,7 +200,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
 
     @Test
     public void test05ListByTradeAmount() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTradeRepository tradeRepository = SpringContext.getBean(MysqlTradeRepository.class);
 
         int loopCount = 15;
         int pageNo = 1, pageSize = 12;
@@ -240,7 +240,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
 
     @Test
     public void test05ListByTradeAmountEq() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTradeRepository tradeRepository = SpringContext.getBean(MysqlTradeRepository.class);
 
         int loopCount = 15;
         int pageNo = 1, pageSize = 12;
@@ -280,7 +280,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
 
     @Test
     public void test05ListByTradeAmountNe() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTradeRepository tradeRepository = SpringContext.getBean(MysqlTradeRepository.class);
 
         int loopCount = 15;
         int pageNo = 1, pageSize = 12;
@@ -320,7 +320,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
 
     @Test
     public void test05ListByTradeAmountGt() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTradeRepository tradeRepository = SpringContext.getBean(MysqlTradeRepository.class);
 
         int loopCount = 15;
         int pageNo = 1, pageSize = 12;
@@ -360,7 +360,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
 
     @Test
     public void test05ListByTradeAmountGte() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTradeRepository tradeRepository = SpringContext.getBean(MysqlTradeRepository.class);
 
         int loopCount = 15;
         int pageNo = 1, pageSize = 12;
@@ -400,7 +400,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
 
     @Test
     public void test05ListByTradeAmountLt() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTradeRepository tradeRepository = SpringContext.getBean(MysqlTradeRepository.class);
 
         int loopCount = 15;
         int pageNo = 1, pageSize = 12;
@@ -440,7 +440,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
 
     @Test
     public void test05ListByTradeAmountLte() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTradeRepository tradeRepository = SpringContext.getBean(MysqlTradeRepository.class);
 
         int loopCount = 15;
         int pageNo = 1, pageSize = 12;
@@ -480,7 +480,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
 
     @Test
     public void test05ListBySourceCardNumberLike() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTradeRepository tradeRepository = SpringContext.getBean(MysqlTradeRepository.class);
 
         int loopCount = 15;
         int pageNo = 1, pageSize = 12;
@@ -520,7 +520,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
 
     @Test
     public void test05ListBySourceCardNumberNotLike() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTradeRepository tradeRepository = SpringContext.getBean(MysqlTradeRepository.class);
 
         int loopCount = 15;
         int pageNo = 1, pageSize = 12;
@@ -560,7 +560,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
 
     @Test
     public void test05ListBySourceCardNumberIn() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTradeRepository tradeRepository = SpringContext.getBean(MysqlTradeRepository.class);
 
         int loopCount = 15;
         int pageNo = 1, pageSize = 12;
@@ -600,7 +600,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
 
     @Test
     public void test05ListBySourceCardNumberNotIn() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTradeRepository tradeRepository = SpringContext.getBean(MysqlTradeRepository.class);
 
         int loopCount = 15;
         int pageNo = 1, pageSize = 12;
@@ -640,7 +640,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
 
     @Test
     public void test05ListByOrderBySourceCardNumberAsc() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTradeRepository tradeRepository = SpringContext.getBean(MysqlTradeRepository.class);
 
         int loopCount = 15;
         int pageNo = 1, pageSize = 12;
@@ -666,7 +666,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
 
     @Test
     public void test05ListByOrderBySourceCardNumberDesc() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTradeRepository tradeRepository = SpringContext.getBean(MysqlTradeRepository.class);
 
         int loopCount = 15;
         int pageNo = 1, pageSize = 12;
@@ -692,7 +692,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
 
     @Test
     public void test06Update() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTradeRepository tradeRepository = SpringContext.getBean(MysqlTradeRepository.class);
 
         Trade trade = newRandomTrade(0);
         int updated = tradeRepository.save(trade);
@@ -719,7 +719,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
 
     @Test
     public void test07UpdateNotNull() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTradeRepository tradeRepository = SpringContext.getBean(MysqlTradeRepository.class);
 
         Trade trade = newRandomTrade(0);
         int updated = tradeRepository.save(trade);
@@ -752,7 +752,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
 
     @Test
     public void test08UpdateBy() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTradeRepository tradeRepository = SpringContext.getBean(MysqlTradeRepository.class);
 
         int loopCount = 15;
         JSONObject queryMap = new JSONObject();
@@ -788,7 +788,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
 
     @Test
     public void test09UpdateNotNullBy() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTradeRepository tradeRepository = SpringContext.getBean(MysqlTradeRepository.class);
 
         int loopCount = 15;
         JSONObject queryMap = new JSONObject();
@@ -830,7 +830,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
 
     @Test
     public void test10DeleteById() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTradeRepository tradeRepository = SpringContext.getBean(MysqlTradeRepository.class);
 
         Trade trade = newRandomTrade(0);
         int updated = tradeRepository.add(trade);
@@ -848,7 +848,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
 
     @Test
     public void test11DeleteBy() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTradeRepository tradeRepository = SpringContext.getBean(MysqlTradeRepository.class);
 
         int loopCount = 15;
         JSONObject queryMap = new JSONObject();
@@ -874,7 +874,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
 
     @Test
     public void test12AllDistinctBy() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTradeRepository tradeRepository = SpringContext.getBean(MysqlTradeRepository.class);
 
         int loopCount = 15;
         JSONObject queryMap = new JSONObject();
@@ -894,7 +894,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
 
     @Test
     public void test13CountDistinctBy() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTradeRepository tradeRepository = SpringContext.getBean(MysqlTradeRepository.class);
 
         int loopCount = 15;
         JSONObject queryMap = new JSONObject();

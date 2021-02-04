@@ -19,10 +19,4 @@ public class PostgresTaskTradeRepository extends AbstractPostgresTaskEntityJdbcR
         return Trade.class;
     }
 
-    public void doBiz() {
-
-        System.out.println(" doBiz in repository ");
-
-    }
-
 }

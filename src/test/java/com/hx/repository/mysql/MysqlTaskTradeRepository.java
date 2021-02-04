@@ -1,6 +1,6 @@
-package com.hx.repository.sqlite;
+package com.hx.repository.mysql;
 
-import com.hx.repository.base.sqlite.AbstractSqliteTaskEntityJdbcRepository;
+import com.hx.repository.base.msyql.AbstractMysqlTaskEntityJdbcRepository;
 import com.hx.repository.domain.Trade;
 import org.springframework.stereotype.Repository;
 
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
  * @date 2021-01-19 22:08
  */
 @Repository
-public class SqliteTaskTradeRepository extends AbstractSqliteTaskEntityJdbcRepository<Trade> {
+public class MysqlTaskTradeRepository extends AbstractMysqlTaskEntityJdbcRepository<Trade> {
 
     @Override
     public Class<Trade> getClazz() {

@@ -19,8 +19,8 @@ import java.util.Collections;
 import java.util.List;
 
 import static com.hx.log.log.LogPatternUtils.formatLogInfoWithIdx;
-import static com.hx.repository.tests.postgres.Test01PostgresTradeRepository.lookUp;
-import static com.hx.repository.tests.postgres.Test01PostgresTradeRepository.newRandomTrade;
+import static com.hx.repository.tests.sqlite.Test01SqliteTradeRepository.lookUp;
+import static com.hx.repository.tests.sqlite.Test01SqliteTradeRepository.newRandomTrade;
 
 /**
  * Test02PostgresTaskTradeRepository

@@ -1,4 +1,4 @@
-package com.hx.repository.tests.postgres;
+package com.hx.repository.tests.mysql;
 
 import com.alibaba.fastjson.JSONObject;
 import com.hx.common.util.AssertUtils;
@@ -7,8 +7,8 @@ import com.hx.repository.consts.WebContextConstants;
 import com.hx.repository.context.SpringContext;
 import com.hx.repository.domain.Trade;
 import com.hx.repository.model.Page;
-import com.hx.repository.postgres.PostgresTradeRepository;
-import com.hx.repository.tests.base.PostgresBaseRepositoryTest;
+import com.hx.repository.mysql.MysqlTaskTradeRepository;
+import com.hx.repository.tests.base.MysqlBaseRepositoryTest;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -23,32 +23,34 @@ import static com.hx.repository.tests.sqlite.Test01SqliteTradeRepository.lookUp;
 import static com.hx.repository.tests.sqlite.Test01SqliteTradeRepository.newRandomTrade;
 
 /**
- * Test01PostgresTradeRepository
+ * Test02MysqlTaskTradeRepository
  *
  * @author Jerry.X.He
  * @version 1.0
- * @date 2021-02-03 10:47
+ * @date 2021-02-04 11:51
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
+public class Test02MysqlTaskTradeRepository extends MysqlBaseRepositoryTest {
+
+    private static final String TEST_TASK_ID = "hxrepo";
 
     @Before
     public void test01ClearTrades() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
-        int updated = tradeRepository.deleteBy(new JSONObject(), true);
+        MysqlTaskTradeRepository taskTradeRepository = SpringContext.getBean(MysqlTaskTradeRepository.class);
+        int updated = taskTradeRepository.deleteBy(TEST_TASK_ID, new JSONObject(), true);
         Log.info(formatLogInfoWithIdx(" 移除了 {0} 条交易信息 ", updated));
     }
 
     @Test
     public void test01Add() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTaskTradeRepository taskTradeRepository = SpringContext.getBean(MysqlTaskTradeRepository.class);
 
         Trade trade = newRandomTrade(0);
-        int updated = tradeRepository.add(trade);
+        int updated = taskTradeRepository.add(TEST_TASK_ID, trade);
         Log.info(formatLogInfoWithIdx(" 新增了 {0} 条交易信息 ", updated));
 
         String savedId = trade.getId();
-        Trade tradeInDb = tradeRepository.findById(savedId);
+        Trade tradeInDb = taskTradeRepository.findById(TEST_TASK_ID, savedId);
 
         AssertUtils.assert0(toDebugJSON(trade), toDebugJSON(tradeInDb), " trade <> tradeInDb ");
         Log.info(formatLogInfoWithIdx(" test01Save succeed "));
@@ -56,17 +58,17 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
 
     @Test
     public void test02AddAll() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTaskTradeRepository taskTradeRepository = SpringContext.getBean(MysqlTaskTradeRepository.class);
 
         int loopCount = 10;
         List<Trade> tradeList = new ArrayList<>();
         for (int i = 0; i < loopCount; i++) {
             tradeList.add(newRandomTrade(i));
         }
-        int updated = tradeRepository.addAll(tradeList);
+        int updated = taskTradeRepository.addAll(TEST_TASK_ID, tradeList);
         Log.info(formatLogInfoWithIdx(" 新增了 {0} 条交易信息 ", updated));
 
-        List<Trade> tradeListInDb = tradeRepository.allBy(new JSONObject(), true);
+        List<Trade> tradeListInDb = taskTradeRepository.allBy(TEST_TASK_ID, new JSONObject(), true);
         for (Trade trade : tradeList) {
             Trade tradeInDb = lookUp(tradeListInDb, trade.getId());
             AssertUtils.assert0(toDebugJSON(trade), toDebugJSON(tradeInDb), " trade <> tradeInDb ");
@@ -76,14 +78,14 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
 
     @Test
     public void test03SaveAdd() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTaskTradeRepository taskTradeRepository = SpringContext.getBean(MysqlTaskTradeRepository.class);
 
         Trade trade = newRandomTrade(0);
-        int updated = tradeRepository.save(trade);
+        int updated = taskTradeRepository.save(TEST_TASK_ID, trade);
         Log.info(formatLogInfoWithIdx(" 保存了 {0} 条交易信息 ", updated));
 
         String savedId = trade.getId();
-        Trade tradeInDb = tradeRepository.findById(savedId);
+        Trade tradeInDb = taskTradeRepository.findById(TEST_TASK_ID, savedId);
 
         AssertUtils.assert0(toDebugJSON(trade), toDebugJSON(tradeInDb), " trade <> tradeInDb ");
         Log.info(formatLogInfoWithIdx(" test03Save succeed "));
@@ -91,10 +93,10 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
 
     @Test
     public void test03SaveUpdate() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTaskTradeRepository taskTradeRepository = SpringContext.getBean(MysqlTaskTradeRepository.class);
 
         Trade trade = newRandomTrade(0);
-        int updated = tradeRepository.add(trade);
+        int updated = taskTradeRepository.add(TEST_TASK_ID, trade);
         Log.info(formatLogInfoWithIdx(" 新增了 {0} 条交易信息 ", updated));
 
         trade.setSourceCardNumber("updated");
@@ -102,11 +104,11 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
         trade.setCashMarks("updated");
         trade.setIp("updated");
         trade.setMac("updated");
-        updated = tradeRepository.save(trade);
+        updated = taskTradeRepository.save(TEST_TASK_ID, trade);
         Log.info(formatLogInfoWithIdx(" 更新了 {0} 条交易信息 ", updated));
 
         String savedId = trade.getId();
-        Trade tradeInDb = tradeRepository.findById(savedId);
+        Trade tradeInDb = taskTradeRepository.findById(TEST_TASK_ID, savedId);
 
         AssertUtils.assert0(toDebugJSON(trade), toDebugJSON(tradeInDb), " trade <> tradeInDb ");
         Log.info(formatLogInfoWithIdx(" test03SaveUpdate succeed "));
@@ -114,18 +116,18 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
 
     @Test
     public void test04SaveNotNullAdd() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTaskTradeRepository taskTradeRepository = SpringContext.getBean(MysqlTaskTradeRepository.class);
 
         Trade trade = newRandomTrade(0);
         trade.setMemo(null);
         trade.setRemark(null);
         trade.setCurrencyCode(null);
         trade.setCashMarks(null);
-        int updated = tradeRepository.saveNotNull(trade);
+        int updated = taskTradeRepository.saveNotNull(TEST_TASK_ID, trade);
         Log.info(formatLogInfoWithIdx(" 保存了 {0} 条交易信息 ", updated));
 
         String savedId = trade.getId();
-        Trade tradeInDb = tradeRepository.findById(savedId);
+        Trade tradeInDb = taskTradeRepository.findById(TEST_TASK_ID, savedId);
 
         AssertUtils.assert0(toDebugJSON(trade), toDebugJSON(tradeInDb), " trade <> tradeInDb ");
         Log.info(formatLogInfoWithIdx(" test04SaveNotNullAdd succeed "));
@@ -133,10 +135,10 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
 
     @Test
     public void test04SaveNotNullUpdate() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTaskTradeRepository taskTradeRepository = SpringContext.getBean(MysqlTaskTradeRepository.class);
 
         Trade trade = newRandomTrade(0);
-        int updated = tradeRepository.add(trade);
+        int updated = taskTradeRepository.add(TEST_TASK_ID, trade);
         Log.info(formatLogInfoWithIdx(" 新增了 {0} 条交易信息 ", updated));
 
         trade.setMemo(null);
@@ -148,11 +150,11 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
         trade.setCashMarks("updated");
         trade.setIp("updated");
         trade.setMac("updated");
-        updated = tradeRepository.saveNotNull(trade);
+        updated = taskTradeRepository.saveNotNull(TEST_TASK_ID, trade);
         Log.info(formatLogInfoWithIdx(" 更新了 {0} 条交易信息 ", updated));
 
         String savedId = trade.getId();
-        Trade tradeInDb = tradeRepository.findById(savedId);
+        Trade tradeInDb = taskTradeRepository.findById(TEST_TASK_ID, savedId);
 
         AssertUtils.assert0(toDebugJSON(trade), toDebugJSON(tradeInDb), false, " trade == tradeInDb ");
         AssertUtils.assert0(tradeInDb.getMemo(), null, false, " memo == null ");
@@ -166,7 +168,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
 
     @Test
     public void test05ListByAll() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTaskTradeRepository taskTradeRepository = SpringContext.getBean(MysqlTaskTradeRepository.class);
 
         int loopCount = 15;
         int pageNo = 1, pageSize = 12;
@@ -175,7 +177,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
         for (int i = 0; i < loopCount; i++) {
             tradeList.add(newRandomTrade(i));
         }
-        int updated = tradeRepository.addAll(tradeList);
+        int updated = taskTradeRepository.addAll(TEST_TASK_ID, tradeList);
         Log.info(formatLogInfoWithIdx(" 新增了 {0} 条交易信息 ", updated));
         int totalRecord = tradeList.size();
         int totalPage = Page.calcTotalPage(totalRecord, pageSize);
@@ -184,7 +186,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
         JSONObject queryMap = new JSONObject();
         queryMap.put(WebContextConstants.PAGE_NO, pageNo);
         queryMap.put(WebContextConstants.PAGE_SIZE, pageSize);
-        Page<Trade> tradeListInDb = tradeRepository.listBy(queryMap, true);
+        Page<Trade> tradeListInDb = taskTradeRepository.listBy(TEST_TASK_ID, queryMap, true);
         for (Trade trade : tradeListInDb.getList()) {
             Trade tradeInDb = lookUp(tradeList, trade.getId());
             AssertUtils.assert0(toDebugJSON(trade), toDebugJSON(tradeInDb), " trade <> tradeInDb ");
@@ -200,7 +202,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
 
     @Test
     public void test05ListByTradeAmount() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTaskTradeRepository taskTradeRepository = SpringContext.getBean(MysqlTaskTradeRepository.class);
 
         int loopCount = 15;
         int pageNo = 1, pageSize = 12;
@@ -209,7 +211,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
         for (int i = 0; i < loopCount; i++) {
             tradeList.add(newRandomTrade(i));
         }
-        int updated = tradeRepository.addAll(tradeList);
+        int updated = taskTradeRepository.addAll(TEST_TASK_ID, tradeList);
         Log.info(formatLogInfoWithIdx(" 新增了 {0} 条交易信息 ", updated));
 
         Trade targetTrade = tradeList.get(0);
@@ -224,7 +226,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
         queryMap.put(WebContextConstants.PAGE_NO, pageNo);
         queryMap.put(WebContextConstants.PAGE_SIZE, pageSize);
         queryMap.put("tradeAmount", targetTrade.getTradeAmount());
-        Page<Trade> tradeListInDb = tradeRepository.listBy(queryMap, true);
+        Page<Trade> tradeListInDb = taskTradeRepository.listBy(TEST_TASK_ID, queryMap, true);
         for (Trade trade : tradeListInDb.getList()) {
             Trade tradeInDb = lookUp(tradeList, trade.getId());
             AssertUtils.assert0(toDebugJSON(trade), toDebugJSON(tradeInDb), " trade <> tradeInDb ");
@@ -240,7 +242,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
 
     @Test
     public void test05ListByTradeAmountEq() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTaskTradeRepository taskTradeRepository = SpringContext.getBean(MysqlTaskTradeRepository.class);
 
         int loopCount = 15;
         int pageNo = 1, pageSize = 12;
@@ -249,7 +251,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
         for (int i = 0; i < loopCount; i++) {
             tradeList.add(newRandomTrade(i));
         }
-        int updated = tradeRepository.addAll(tradeList);
+        int updated = taskTradeRepository.addAll(TEST_TASK_ID, tradeList);
         Log.info(formatLogInfoWithIdx(" 新增了 {0} 条交易信息 ", updated));
 
         Trade targetTrade = tradeList.get(0);
@@ -264,7 +266,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
         queryMap.put(WebContextConstants.PAGE_NO, pageNo);
         queryMap.put(WebContextConstants.PAGE_SIZE, pageSize);
         queryMap.put("tradeAmountEq", targetTrade.getTradeAmount());
-        Page<Trade> tradeListInDb = tradeRepository.listBy(queryMap, true);
+        Page<Trade> tradeListInDb = taskTradeRepository.listBy(TEST_TASK_ID, queryMap, true);
         for (Trade trade : tradeListInDb.getList()) {
             Trade tradeInDb = lookUp(tradeList, trade.getId());
             AssertUtils.assert0(toDebugJSON(trade), toDebugJSON(tradeInDb), " trade <> tradeInDb ");
@@ -280,7 +282,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
 
     @Test
     public void test05ListByTradeAmountNe() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTaskTradeRepository taskTradeRepository = SpringContext.getBean(MysqlTaskTradeRepository.class);
 
         int loopCount = 15;
         int pageNo = 1, pageSize = 12;
@@ -289,7 +291,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
         for (int i = 0; i < loopCount; i++) {
             tradeList.add(newRandomTrade(i));
         }
-        int updated = tradeRepository.addAll(tradeList);
+        int updated = taskTradeRepository.addAll(TEST_TASK_ID, tradeList);
         Log.info(formatLogInfoWithIdx(" 新增了 {0} 条交易信息 ", updated));
 
         Trade targetTrade = tradeList.get(0);
@@ -304,7 +306,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
         queryMap.put(WebContextConstants.PAGE_NO, pageNo);
         queryMap.put(WebContextConstants.PAGE_SIZE, pageSize);
         queryMap.put("tradeAmountNe", targetTrade.getTradeAmount());
-        Page<Trade> tradeListInDb = tradeRepository.listBy(queryMap, true);
+        Page<Trade> tradeListInDb = taskTradeRepository.listBy(TEST_TASK_ID, queryMap, true);
         for (Trade trade : tradeListInDb.getList()) {
             Trade tradeInDb = lookUp(tradeList, trade.getId());
             AssertUtils.assert0(toDebugJSON(trade), toDebugJSON(tradeInDb), " trade <> tradeInDb ");
@@ -320,7 +322,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
 
     @Test
     public void test05ListByTradeAmountGt() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTaskTradeRepository taskTradeRepository = SpringContext.getBean(MysqlTaskTradeRepository.class);
 
         int loopCount = 15;
         int pageNo = 1, pageSize = 12;
@@ -329,7 +331,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
         for (int i = 0; i < loopCount; i++) {
             tradeList.add(newRandomTrade(i));
         }
-        int updated = tradeRepository.addAll(tradeList);
+        int updated = taskTradeRepository.addAll(TEST_TASK_ID, tradeList);
         Log.info(formatLogInfoWithIdx(" 新增了 {0} 条交易信息 ", updated));
 
         Trade targetTrade = tradeList.get(0);
@@ -344,7 +346,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
         queryMap.put(WebContextConstants.PAGE_NO, pageNo);
         queryMap.put(WebContextConstants.PAGE_SIZE, pageSize);
         queryMap.put("tradeAmountGt", targetTrade.getTradeAmount());
-        Page<Trade> tradeListInDb = tradeRepository.listBy(queryMap, true);
+        Page<Trade> tradeListInDb = taskTradeRepository.listBy(TEST_TASK_ID, queryMap, true);
         for (Trade trade : tradeListInDb.getList()) {
             Trade tradeInDb = lookUp(tradeList, trade.getId());
             AssertUtils.assert0(toDebugJSON(trade), toDebugJSON(tradeInDb), " trade <> tradeInDb ");
@@ -360,7 +362,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
 
     @Test
     public void test05ListByTradeAmountGte() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTaskTradeRepository taskTradeRepository = SpringContext.getBean(MysqlTaskTradeRepository.class);
 
         int loopCount = 15;
         int pageNo = 1, pageSize = 12;
@@ -369,7 +371,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
         for (int i = 0; i < loopCount; i++) {
             tradeList.add(newRandomTrade(i));
         }
-        int updated = tradeRepository.addAll(tradeList);
+        int updated = taskTradeRepository.addAll(TEST_TASK_ID, tradeList);
         Log.info(formatLogInfoWithIdx(" 新增了 {0} 条交易信息 ", updated));
 
         Trade targetTrade = tradeList.get(0);
@@ -384,7 +386,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
         queryMap.put(WebContextConstants.PAGE_NO, pageNo);
         queryMap.put(WebContextConstants.PAGE_SIZE, pageSize);
         queryMap.put("tradeAmountGte", targetTrade.getTradeAmount());
-        Page<Trade> tradeListInDb = tradeRepository.listBy(queryMap, true);
+        Page<Trade> tradeListInDb = taskTradeRepository.listBy(TEST_TASK_ID, queryMap, true);
         for (Trade trade : tradeListInDb.getList()) {
             Trade tradeInDb = lookUp(tradeList, trade.getId());
             AssertUtils.assert0(toDebugJSON(trade), toDebugJSON(tradeInDb), " trade <> tradeInDb ");
@@ -400,7 +402,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
 
     @Test
     public void test05ListByTradeAmountLt() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTaskTradeRepository taskTradeRepository = SpringContext.getBean(MysqlTaskTradeRepository.class);
 
         int loopCount = 15;
         int pageNo = 1, pageSize = 12;
@@ -409,7 +411,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
         for (int i = 0; i < loopCount; i++) {
             tradeList.add(newRandomTrade(i));
         }
-        int updated = tradeRepository.addAll(tradeList);
+        int updated = taskTradeRepository.addAll(TEST_TASK_ID, tradeList);
         Log.info(formatLogInfoWithIdx(" 新增了 {0} 条交易信息 ", updated));
 
         Trade targetTrade = tradeList.get(0);
@@ -424,7 +426,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
         queryMap.put(WebContextConstants.PAGE_NO, pageNo);
         queryMap.put(WebContextConstants.PAGE_SIZE, pageSize);
         queryMap.put("tradeAmountLt", targetTrade.getTradeAmount());
-        Page<Trade> tradeListInDb = tradeRepository.listBy(queryMap, true);
+        Page<Trade> tradeListInDb = taskTradeRepository.listBy(TEST_TASK_ID, queryMap, true);
         for (Trade trade : tradeListInDb.getList()) {
             Trade tradeInDb = lookUp(tradeList, trade.getId());
             AssertUtils.assert0(toDebugJSON(trade), toDebugJSON(tradeInDb), " trade <> tradeInDb ");
@@ -440,7 +442,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
 
     @Test
     public void test05ListByTradeAmountLte() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTaskTradeRepository taskTradeRepository = SpringContext.getBean(MysqlTaskTradeRepository.class);
 
         int loopCount = 15;
         int pageNo = 1, pageSize = 12;
@@ -449,7 +451,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
         for (int i = 0; i < loopCount; i++) {
             tradeList.add(newRandomTrade(i));
         }
-        int updated = tradeRepository.addAll(tradeList);
+        int updated = taskTradeRepository.addAll(TEST_TASK_ID, tradeList);
         Log.info(formatLogInfoWithIdx(" 新增了 {0} 条交易信息 ", updated));
 
         Trade targetTrade = tradeList.get(0);
@@ -464,7 +466,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
         queryMap.put(WebContextConstants.PAGE_NO, pageNo);
         queryMap.put(WebContextConstants.PAGE_SIZE, pageSize);
         queryMap.put("tradeAmountLte", targetTrade.getTradeAmount());
-        Page<Trade> tradeListInDb = tradeRepository.listBy(queryMap, true);
+        Page<Trade> tradeListInDb = taskTradeRepository.listBy(TEST_TASK_ID, queryMap, true);
         for (Trade trade : tradeListInDb.getList()) {
             Trade tradeInDb = lookUp(tradeList, trade.getId());
             AssertUtils.assert0(toDebugJSON(trade), toDebugJSON(tradeInDb), " trade <> tradeInDb ");
@@ -480,7 +482,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
 
     @Test
     public void test05ListBySourceCardNumberLike() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTaskTradeRepository taskTradeRepository = SpringContext.getBean(MysqlTaskTradeRepository.class);
 
         int loopCount = 15;
         int pageNo = 1, pageSize = 12;
@@ -489,7 +491,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
         for (int i = 0; i < loopCount; i++) {
             tradeList.add(newRandomTrade(i));
         }
-        int updated = tradeRepository.addAll(tradeList);
+        int updated = taskTradeRepository.addAll(TEST_TASK_ID, tradeList);
         Log.info(formatLogInfoWithIdx(" 新增了 {0} 条交易信息 ", updated));
 
         Trade targetTrade = tradeList.get(0);
@@ -503,8 +505,8 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
         JSONObject queryMap = new JSONObject();
         queryMap.put(WebContextConstants.PAGE_NO, pageNo);
         queryMap.put(WebContextConstants.PAGE_SIZE, pageSize);
-        queryMap.put("sourceCardNumberLike", String.format("%s", targetTrade.getSourceCardNumber()));
-        Page<Trade> tradeListInDb = tradeRepository.listBy(queryMap, true);
+        queryMap.put("sourceCardNumberLike", String.format("%%%s%%", targetTrade.getSourceCardNumber()));
+        Page<Trade> tradeListInDb = taskTradeRepository.listBy(TEST_TASK_ID, queryMap, true);
         for (Trade trade : tradeListInDb.getList()) {
             Trade tradeInDb = lookUp(tradeList, trade.getId());
             AssertUtils.assert0(toDebugJSON(trade), toDebugJSON(tradeInDb), " trade <> tradeInDb ");
@@ -520,7 +522,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
 
     @Test
     public void test05ListBySourceCardNumberNotLike() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTaskTradeRepository taskTradeRepository = SpringContext.getBean(MysqlTaskTradeRepository.class);
 
         int loopCount = 15;
         int pageNo = 1, pageSize = 12;
@@ -529,7 +531,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
         for (int i = 0; i < loopCount; i++) {
             tradeList.add(newRandomTrade(i));
         }
-        int updated = tradeRepository.addAll(tradeList);
+        int updated = taskTradeRepository.addAll(TEST_TASK_ID, tradeList);
         Log.info(formatLogInfoWithIdx(" 新增了 {0} 条交易信息 ", updated));
 
         Trade targetTrade = tradeList.get(0);
@@ -543,8 +545,8 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
         JSONObject queryMap = new JSONObject();
         queryMap.put(WebContextConstants.PAGE_NO, pageNo);
         queryMap.put(WebContextConstants.PAGE_SIZE, pageSize);
-        queryMap.put("sourceCardNumberNotLike", String.format("%s", targetTrade.getSourceCardNumber()));
-        Page<Trade> tradeListInDb = tradeRepository.listBy(queryMap, true);
+        queryMap.put("sourceCardNumberNotLike", String.format("%%%s%%", targetTrade.getSourceCardNumber()));
+        Page<Trade> tradeListInDb = taskTradeRepository.listBy(TEST_TASK_ID, queryMap, true);
         for (Trade trade : tradeListInDb.getList()) {
             Trade tradeInDb = lookUp(tradeList, trade.getId());
             AssertUtils.assert0(toDebugJSON(trade), toDebugJSON(tradeInDb), " trade <> tradeInDb ");
@@ -560,7 +562,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
 
     @Test
     public void test05ListBySourceCardNumberIn() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTaskTradeRepository taskTradeRepository = SpringContext.getBean(MysqlTaskTradeRepository.class);
 
         int loopCount = 15;
         int pageNo = 1, pageSize = 12;
@@ -569,7 +571,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
         for (int i = 0; i < loopCount; i++) {
             tradeList.add(newRandomTrade(i));
         }
-        int updated = tradeRepository.addAll(tradeList);
+        int updated = taskTradeRepository.addAll(TEST_TASK_ID, tradeList);
         Log.info(formatLogInfoWithIdx(" 新增了 {0} 条交易信息 ", updated));
 
         Trade targetTrade = tradeList.get(0);
@@ -584,7 +586,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
         queryMap.put(WebContextConstants.PAGE_NO, pageNo);
         queryMap.put(WebContextConstants.PAGE_SIZE, pageSize);
         queryMap.put("sourceCardNumberIn", Collections.singletonList(targetTrade.getSourceCardNumber()));
-        Page<Trade> tradeListInDb = tradeRepository.listBy(queryMap, true);
+        Page<Trade> tradeListInDb = taskTradeRepository.listBy(TEST_TASK_ID, queryMap, true);
         for (Trade trade : tradeListInDb.getList()) {
             Trade tradeInDb = lookUp(tradeList, trade.getId());
             AssertUtils.assert0(toDebugJSON(trade), toDebugJSON(tradeInDb), " trade <> tradeInDb ");
@@ -600,7 +602,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
 
     @Test
     public void test05ListBySourceCardNumberNotIn() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTaskTradeRepository taskTradeRepository = SpringContext.getBean(MysqlTaskTradeRepository.class);
 
         int loopCount = 15;
         int pageNo = 1, pageSize = 12;
@@ -609,7 +611,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
         for (int i = 0; i < loopCount; i++) {
             tradeList.add(newRandomTrade(i));
         }
-        int updated = tradeRepository.addAll(tradeList);
+        int updated = taskTradeRepository.addAll(TEST_TASK_ID, tradeList);
         Log.info(formatLogInfoWithIdx(" 新增了 {0} 条交易信息 ", updated));
 
         Trade targetTrade = tradeList.get(0);
@@ -624,7 +626,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
         queryMap.put(WebContextConstants.PAGE_NO, pageNo);
         queryMap.put(WebContextConstants.PAGE_SIZE, pageSize);
         queryMap.put("sourceCardNumberNotIn", Collections.singletonList(targetTrade.getSourceCardNumber()));
-        Page<Trade> tradeListInDb = tradeRepository.listBy(queryMap, true);
+        Page<Trade> tradeListInDb = taskTradeRepository.listBy(TEST_TASK_ID, queryMap, true);
         for (Trade trade : tradeListInDb.getList()) {
             Trade tradeInDb = lookUp(tradeList, trade.getId());
             AssertUtils.assert0(toDebugJSON(trade), toDebugJSON(tradeInDb), " trade <> tradeInDb ");
@@ -640,7 +642,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
 
     @Test
     public void test05ListByOrderBySourceCardNumberAsc() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTaskTradeRepository taskTradeRepository = SpringContext.getBean(MysqlTaskTradeRepository.class);
 
         int loopCount = 15;
         int pageNo = 1, pageSize = 12;
@@ -649,12 +651,12 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
         for (int i = 0; i < loopCount; i++) {
             tradeList.add(newRandomTrade(i));
         }
-        int updated = tradeRepository.addAll(tradeList);
+        int updated = taskTradeRepository.addAll(TEST_TASK_ID, tradeList);
         Log.info(formatLogInfoWithIdx(" 新增了 {0} 条交易信息 ", updated));
 
         JSONObject queryMap = new JSONObject();
         queryMap.put("sourceCardNumber$OrderBy", true);
-        List<Trade> tradeListInDb = tradeRepository.allBy(queryMap, true);
+        List<Trade> tradeListInDb = taskTradeRepository.allBy(TEST_TASK_ID, queryMap, true);
 
         String compareField = tradeListInDb.get(0).getSourceCardNumber();
         for (Trade trade : tradeListInDb) {
@@ -666,7 +668,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
 
     @Test
     public void test05ListByOrderBySourceCardNumberDesc() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTaskTradeRepository taskTradeRepository = SpringContext.getBean(MysqlTaskTradeRepository.class);
 
         int loopCount = 15;
         int pageNo = 1, pageSize = 12;
@@ -675,12 +677,12 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
         for (int i = 0; i < loopCount; i++) {
             tradeList.add(newRandomTrade(i));
         }
-        int updated = tradeRepository.addAll(tradeList);
+        int updated = taskTradeRepository.addAll(TEST_TASK_ID, tradeList);
         Log.info(formatLogInfoWithIdx(" 新增了 {0} 条交易信息 ", updated));
 
         JSONObject queryMap = new JSONObject();
         queryMap.put("sourceCardNumber$OrderBy", false);
-        List<Trade> tradeListInDb = tradeRepository.allBy(queryMap, true);
+        List<Trade> tradeListInDb = taskTradeRepository.allBy(TEST_TASK_ID, queryMap, true);
 
         String compareField = tradeListInDb.get(0).getSourceCardNumber();
         for (Trade trade : tradeListInDb) {
@@ -692,10 +694,10 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
 
     @Test
     public void test06Update() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTaskTradeRepository taskTradeRepository = SpringContext.getBean(MysqlTaskTradeRepository.class);
 
         Trade trade = newRandomTrade(0);
-        int updated = tradeRepository.save(trade);
+        int updated = taskTradeRepository.save(TEST_TASK_ID, trade);
         Log.info(formatLogInfoWithIdx(" 新增了 {0} 条交易信息 ", updated));
 
         trade.setMemo(null);
@@ -707,11 +709,11 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
         trade.setCashMarks("updated");
         trade.setIp("updated");
         trade.setMac("updated");
-        updated = tradeRepository.update(trade);
+        updated = taskTradeRepository.update(TEST_TASK_ID, trade);
         Log.info(formatLogInfoWithIdx(" 更新了 {0} 条交易信息 ", updated));
 
         String savedId = trade.getId();
-        Trade tradeInDb = tradeRepository.findById(savedId);
+        Trade tradeInDb = taskTradeRepository.findById(TEST_TASK_ID, savedId);
 
         AssertUtils.assert0(toDebugJSON(trade), toDebugJSON(tradeInDb), " trade <> tradeInDb ");
         Log.info(formatLogInfoWithIdx(" test06Update succeed "));
@@ -719,10 +721,10 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
 
     @Test
     public void test07UpdateNotNull() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTaskTradeRepository taskTradeRepository = SpringContext.getBean(MysqlTaskTradeRepository.class);
 
         Trade trade = newRandomTrade(0);
-        int updated = tradeRepository.save(trade);
+        int updated = taskTradeRepository.save(TEST_TASK_ID, trade);
         Log.info(formatLogInfoWithIdx(" 新增了 {0} 条交易信息 ", updated));
 
         trade.setMemo(null);
@@ -734,11 +736,11 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
         trade.setCashMarks("updated");
         trade.setIp("updated");
         trade.setMac("updated");
-        updated = tradeRepository.updateNotNull(trade);
+        updated = taskTradeRepository.updateNotNull(TEST_TASK_ID, trade);
         Log.info(formatLogInfoWithIdx(" 更新了 {0} 条交易信息 ", updated));
 
         String savedId = trade.getId();
-        Trade tradeInDb = tradeRepository.findById(savedId);
+        Trade tradeInDb = taskTradeRepository.findById(TEST_TASK_ID, savedId);
 
         AssertUtils.assert0(toDebugJSON(trade), toDebugJSON(tradeInDb), false, " trade == tradeInDb ");
         AssertUtils.assert0(tradeInDb.getMemo(), null, false, " memo == null ");
@@ -752,7 +754,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
 
     @Test
     public void test08UpdateBy() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTaskTradeRepository taskTradeRepository = SpringContext.getBean(MysqlTaskTradeRepository.class);
 
         int loopCount = 15;
         JSONObject queryMap = new JSONObject();
@@ -761,7 +763,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
         for (int i = 0; i < loopCount; i++) {
             tradeList.add(newRandomTrade(i));
         }
-        int updated = tradeRepository.addAll(tradeList);
+        int updated = taskTradeRepository.addAll(TEST_TASK_ID, tradeList);
         Log.info(formatLogInfoWithIdx(" 新增了 {0} 条交易信息 ", updated));
 
         Trade targetTrade = tradeList.get(0);
@@ -775,10 +777,10 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
         targetTrade.setCashMarks("updated");
         targetTrade.setIp("updated");
         targetTrade.setMac("updated");
-        updated = tradeRepository.updateBy(targetTrade, queryMap, true);
+        updated = taskTradeRepository.updateBy(TEST_TASK_ID, targetTrade, queryMap, true);
         Log.info(formatLogInfoWithIdx(" 更新了 {0} 条交易信息 ", updated));
 
-        Page<Trade> tradeListInDb = tradeRepository.listBy(queryMap, true);
+        Page<Trade> tradeListInDb = taskTradeRepository.listBy(TEST_TASK_ID, queryMap, true);
         for (Trade tradeInDb : tradeListInDb.getList()) {
             Trade trade = lookUp(tradeList, targetTrade.getId());
             AssertUtils.assert0(toDebugJSON(trade), toDebugJSON(tradeInDb), " trade <> tradeInDb ");
@@ -788,7 +790,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
 
     @Test
     public void test09UpdateNotNullBy() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTaskTradeRepository taskTradeRepository = SpringContext.getBean(MysqlTaskTradeRepository.class);
 
         int loopCount = 15;
         JSONObject queryMap = new JSONObject();
@@ -797,7 +799,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
         for (int i = 0; i < loopCount; i++) {
             tradeList.add(newRandomTrade(i));
         }
-        int updated = tradeRepository.addAll(tradeList);
+        int updated = taskTradeRepository.addAll(TEST_TASK_ID, tradeList);
         Log.info(formatLogInfoWithIdx(" 新增了 {0} 条交易信息 ", updated));
 
         Trade targetTrade = tradeList.get(0);
@@ -811,10 +813,10 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
         targetTrade.setCashMarks("updated");
         targetTrade.setIp("updated");
         targetTrade.setMac("updated");
-        updated = tradeRepository.updateNotNullBy(targetTrade, queryMap, true);
+        updated = taskTradeRepository.updateNotNullBy(TEST_TASK_ID, targetTrade, queryMap, true);
         Log.info(formatLogInfoWithIdx(" 更新了 {0} 条交易信息 ", updated));
 
-        Page<Trade> tradeListInDb = tradeRepository.listBy(queryMap, true);
+        Page<Trade> tradeListInDb = taskTradeRepository.listBy(TEST_TASK_ID, queryMap, true);
         for (Trade tradeInDb : tradeListInDb.getList()) {
             Trade trade = lookUp(tradeList, targetTrade.getId());
             AssertUtils.assert0(toDebugJSON(trade), toDebugJSON(tradeInDb), false, " trade == tradeInDb ");
@@ -830,17 +832,17 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
 
     @Test
     public void test10DeleteById() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTaskTradeRepository taskTradeRepository = SpringContext.getBean(MysqlTaskTradeRepository.class);
 
         Trade trade = newRandomTrade(0);
-        int updated = tradeRepository.add(trade);
+        int updated = taskTradeRepository.add(TEST_TASK_ID, trade);
         Log.info(formatLogInfoWithIdx(" 新增了 {0} 条交易信息 ", updated));
 
         String savedId = trade.getId();
-        updated = tradeRepository.deleteById(savedId);
+        updated = taskTradeRepository.deleteById(TEST_TASK_ID, savedId);
         Log.info(formatLogInfoWithIdx(" 移除了 {0} 条交易信息 ", updated));
 
-        Trade tradeInDb = tradeRepository.findById(savedId);
+        Trade tradeInDb = taskTradeRepository.findById(TEST_TASK_ID, savedId);
 
         AssertUtils.assert0(tradeInDb, null, " tradeInDb <> null ");
         Log.info(formatLogInfoWithIdx(" test10DeleteById succeed "));
@@ -848,7 +850,7 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
 
     @Test
     public void test11DeleteBy() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTaskTradeRepository taskTradeRepository = SpringContext.getBean(MysqlTaskTradeRepository.class);
 
         int loopCount = 15;
         JSONObject queryMap = new JSONObject();
@@ -857,24 +859,22 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
         for (int i = 0; i < loopCount; i++) {
             tradeList.add(newRandomTrade(i));
         }
-        int updated = tradeRepository.addAll(tradeList);
+        int updated = taskTradeRepository.addAll(TEST_TASK_ID, tradeList);
         Log.info(formatLogInfoWithIdx(" 新增了 {0} 条交易信息 ", updated));
 
 
-        updated = tradeRepository.deleteBy(queryMap, true);
+        updated = taskTradeRepository.deleteBy(TEST_TASK_ID, queryMap, true);
         Log.info(formatLogInfoWithIdx(" 移除了 {0} 条交易信息 ", updated));
 
-        List<Trade> tradeListInDb = tradeRepository.allBy(queryMap, true);
+        List<Trade> tradeListInDb = taskTradeRepository.allBy(TEST_TASK_ID, queryMap, true);
 
         AssertUtils.assert0(tradeListInDb.size(), 0, " tradeListInDb.length <> 0 ");
         Log.info(formatLogInfoWithIdx(" test11DeleteBy succeed "));
     }
 
-    // ----------------------------------------- 辅助方法 -----------------------------------------
-
     @Test
     public void test12AllDistinctBy() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTaskTradeRepository taskTradeRepository = SpringContext.getBean(MysqlTaskTradeRepository.class);
 
         int loopCount = 15;
         JSONObject queryMap = new JSONObject();
@@ -883,18 +883,19 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
         for (int i = 0; i < loopCount; i++) {
             tradeList.add(newRandomTrade(i));
         }
-        int updated = tradeRepository.addAll(tradeList);
+        int updated = taskTradeRepository.addAll(TEST_TASK_ID, tradeList);
         Log.info(formatLogInfoWithIdx(" 新增了 {0} 条交易信息 ", updated));
 
 
-        List<String> allSourceCardNumbers = tradeRepository.allDistinctBy("sourceCardNumber", queryMap, true);
+        List<String> allSourceCardNumbers = taskTradeRepository.allDistinctBy(
+                TEST_TASK_ID, "sourceCardNumber", queryMap, true);
         AssertUtils.assert0(allSourceCardNumbers.size(), loopCount, " allSourceCardNumbers.length <> $loopCount ");
         Log.info(formatLogInfoWithIdx(" test12AllDistinctBy succeed "));
     }
 
     @Test
     public void test13CountDistinctBy() {
-        PostgresTradeRepository tradeRepository = SpringContext.getBean(PostgresTradeRepository.class);
+        MysqlTaskTradeRepository taskTradeRepository = SpringContext.getBean(MysqlTaskTradeRepository.class);
 
         int loopCount = 15;
         JSONObject queryMap = new JSONObject();
@@ -903,13 +904,15 @@ public class Test01PostgresTradeRepository extends PostgresBaseRepositoryTest {
         for (int i = 0; i < loopCount; i++) {
             tradeList.add(newRandomTrade(i));
         }
-        int updated = tradeRepository.addAll(tradeList);
+        int updated = taskTradeRepository.addAll(TEST_TASK_ID, tradeList);
         Log.info(formatLogInfoWithIdx(" 新增了 {0} 条交易信息 ", updated));
 
 
-        int distincSourceCardNumbers = tradeRepository.countDistinctBy("sourceCardNumber", queryMap, true);
+        int distincSourceCardNumbers = taskTradeRepository.countDistinctBy(
+                TEST_TASK_ID, "sourceCardNumber", queryMap, true);
         AssertUtils.assert0(distincSourceCardNumbers, loopCount, " distincSourceCardNumbers <> $loopCount ");
         Log.info(formatLogInfoWithIdx(" test13CountDistinctBy succeed "));
     }
+
 
 }
