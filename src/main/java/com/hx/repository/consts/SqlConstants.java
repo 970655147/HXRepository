@@ -49,6 +49,11 @@ public final class SqlConstants {
     public static final String COLUMN_UPDATED_USER_ID = "UPDATED_USER_ID";
     /** 列名 : VERSION */
     public static final String COLUMN_VERSION = "VERSION";
+    /** 列名 :创建时间 */
+    public static final String COLUMN_CATM = "CREATED_AT";
+    /** 列名 :更新时间 */
+    public static final String COLUMN_UPTM = "UPDATED_AT";
+
     /** 列名 : 默认的 SOURCE */
     public static final String COLUMN_DEFAULT_SOURCE = "HXRepo";
     /** 列名 : 默认的 ENABLED */
@@ -59,6 +64,10 @@ public final class SqlConstants {
     public static final Boolean COLUMN_DEFAULT_DELETED = Boolean.FALSE;
     /** 列名 : 默认的 SOURCE */
     public static final Long COLUMN_DEFAULT_VERSION = 1L;
+
+    /** dummy sql */
+    public static final String SQL_DUMMY_SQL = " select 1; ";
+
     // disable constructor
     private SqlConstants() {
         Tools.assert0("can't instantiate !");
