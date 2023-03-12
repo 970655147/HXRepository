@@ -531,7 +531,7 @@ public final class TypeCastUtils {
         if (method != null) {
             return method.getName();
         }
-        return null;
+        return candidates.get(0);
     }
 
     /**
@@ -554,7 +554,7 @@ public final class TypeCastUtils {
         if (method != null) {
             return method.getName();
         }
-        return null;
+        return candidates.get(0);
     }
 
     /**
