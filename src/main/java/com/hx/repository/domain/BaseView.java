@@ -18,4 +18,22 @@ public class BaseView implements Serializable {
     @Id
     private String id;
 
+    private String source;
+
+    private Boolean enabled;
+
+    private Boolean locked;
+
+    private Boolean deleted;
+
+    private String createdUserId;
+
+    private Long createdAt;
+
+    private String updatedUserId;
+
+    private Long updatedAt;
+
+    private Long version;
+
 }
