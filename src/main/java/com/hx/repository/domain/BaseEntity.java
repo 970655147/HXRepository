@@ -90,9 +90,6 @@ public class BaseEntity {
     public void preUpdate() {
         updatedUserId = UserContextThreadLocal.newIfNecessary().getUserId();
         updatedAt = System.currentTimeMillis();
-        if(version != null) {
-            version = version + 1;
-        }
     }
 
 }

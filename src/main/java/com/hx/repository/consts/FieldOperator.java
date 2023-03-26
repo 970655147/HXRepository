@@ -1,6 +1,6 @@
 package com.hx.repository.consts;
 
-import com.hx.log.interf.Code2Msg;
+import com.hx.common.interf.common.Code2Msg;
 
 /**
  * FieldOperator

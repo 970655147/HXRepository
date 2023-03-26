@@ -538,6 +538,10 @@ public abstract class AbstractSqliteEntityJdbcRepository<T> extends AbstractEnti
                     String item = wrapFieldValueSql(ite.next(), fieldInfo);
                     itemList.add(item);
                 }
+
+                if (CollectionUtils.isEmpty(itemList)) {
+                    return String.format("(%s)", "select null");
+                }
                 String itemListSql = StringUtils.join(itemList, ", ");
                 return String.format("(%s)", itemListSql);
             }
